@@ -37,6 +37,8 @@ public class User {
 		
 		return in;
 	}	
+	//dont share the scanner
+	
 	public  String getInputString(){
 		Scanner sc= new Scanner(System.in);
 		System.out.print(">>");

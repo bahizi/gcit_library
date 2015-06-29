@@ -16,6 +16,7 @@ public class Admin extends User{
 	public Admin(){
 		adminMenu();
 	}
+	//show the main objects that the admin can affect
 	private void adminMenu(){
 		ArrayList<String> options = new ArrayList<String>();
 		options.add("Books and Authors");
@@ -42,7 +43,7 @@ public class Admin extends User{
 			break;
 		case 4:
 			//manage borrowers;
-			bookAuthorMain();
+			borrowerMain();
 			break;
 		case 5:
 			//manage book loans
@@ -58,6 +59,8 @@ public class Admin extends User{
 			System.exit(1);
 			}
 		}
+	//display the possible actions on a book
+	//allow books with no author but no authors with no books
 	private void bookAuthorMain(){
 		ArrayList<String> options = new ArrayList<String>();
 		options.add("Add Book and Authors");
@@ -73,7 +76,7 @@ public class Admin extends User{
 			break;
 		case 2:
 			//add book and authors
-			editBook();
+			//editBook();
 			break;
 		case 3:
 			//Exit to previous menu
@@ -83,8 +86,9 @@ public class Admin extends User{
 			//This should never happen.
 			System.err.println("Invalid input.");
 		}
-
 	}
+	
+	//receive the necessary information to add a book	
 	private void addBook(){
 		System.out.println("What is the title of the new book?");
 		String title = getInputString();
@@ -131,6 +135,7 @@ public class Admin extends User{
 			System.err.println("Error while connecting to the database");
 		}	
 	}
+	//insert the book in the database and return the new book's id
 	private int insertBook(String title,int pubId){
 		int id = -1;
 		try {
@@ -154,6 +159,7 @@ public class Admin extends User{
 		}
 		return id;	
 	}
+	//gather the necessary information to add a publisher
 	private int addPublisher(){
 		System.out.println("What is the Publisher's name?");
 		String pubName= getInputString();
@@ -164,6 +170,7 @@ public class Admin extends User{
 		int pubId= insertPublisher(pubName,pubAddress,pubPhone);
 		return pubId;
 	}
+	//insert the author in the database, return the new entry's id
 	private int insertAuthor(String name){
 		int id=-1;
 		try {
@@ -194,6 +201,7 @@ public class Admin extends User{
 		}
 		return id;
 	}
+	//insert the publisher in the database
 	private int insertPublisher(String name, String address, String phone){
 		int id=-1;
 		try {
@@ -219,6 +227,8 @@ public class Admin extends User{
 		}
 		return id;
 	}
+	//connect the author and their books in tbl_book_author
+	//has to run every time we add a book
 	private void linkAuthorBook(int authorId, int bookId){
 		try {
 			Connection conn =  getConnection();
@@ -231,9 +241,7 @@ public class Admin extends User{
 			System.err.println("Error while connecting to the Database");
 		}		
 	}
-	private void editBook(){
-
-	}
+	//diplay the possible effects to a publisher
 	private void publisherMain(){
 		ArrayList<String> options = new ArrayList<String>();
 		options.add("Edit stored publishers");
@@ -259,6 +267,7 @@ public class Admin extends User{
 		}
 
 	}
+	//display the possible effects to a library branch
 	private void libraryBranchMain(){
 		ArrayList<String> options = new ArrayList<String>();
 		options.add("Edit stored libraries");
@@ -288,21 +297,25 @@ public class Admin extends User{
 			System.exit(1);
 		}
 	}
+	//display the possible actions on a borrower
+	//let the user choose an action and then call the appropriate method
+	//when done, display this menu again, unless user chooses to exit
 	private void borrowerMain(){
 		ArrayList<String> options = new ArrayList<String>();
 		options.add("Edit stored borrowers");
 		options.add("Register a new borrower");
 		options.add("Delete a stored borrower");
 		options.add("Go back up the menu");
-		System.out.println("What would like to do with publishers?");
+		System.out.println("What would like to do with borrowers?");
 		displayOptions(options);
 		int action = getInputInt(1,options.size());
 		switch(action){
 		case 1:
-			//TODO: Edit borrowers publishers
+			//TODO: Edit borrowers and come back to the menu
+			borrowerMain();
 			break;
 		case 2:
-			//T
+			addBorrower();
 			borrowerMain();
 			break;
 		case 3:
@@ -316,6 +329,8 @@ public class Admin extends User{
 			System.exit(1);
 		}
 	}
+	//gather the library's information
+	//insert the library in the database
 	private int addLibrary(){
 		int id = -1;
 		System.out.println("Branch Name: ");
@@ -324,7 +339,7 @@ public class Admin extends User{
 		String address= getInputString();;
 		try {
 			Connection conn= getConnection();
-			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tbl_library_branch (name, address) VALUES(?,?)");
+			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tbl_library_branch (branchName, branchAddress) VALUES(?,?)");
 			pstmt.setString(1, name);
 			pstmt.setString(2, address);
 			pstmt.execute();
@@ -336,11 +351,13 @@ public class Admin extends User{
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			System.err.println("Error while connecting to the database. Sorry");
+			e.printStackTrace();
+			//System.err.println("Error while connecting to the database. Sorry");
 		}
 
 		return id;
 	}
+	//gather the borrower's information
 	private int addBorrower(){
 		int id = -1;
 		System.out.println("Name: ");
@@ -368,6 +385,8 @@ public class Admin extends User{
 		}
 		return id;		
 	}
+	
+	//display the possible effects on a book loan
 	private void loanMain(){
 		System.out.println("Which library processed the loan?");
 		try {
@@ -430,9 +449,10 @@ public class Admin extends User{
 			e.printStackTrace();
 		}		
 	}
+	//update the book loan in the database
+	//doesnt allow past times and times beyond a week from now
 	private void updateBookLoan(int branchId, int cardNumber, Integer bookId) {
-		//credit to stackoverflow for the date validation: http://stackoverflow.com/questions/2149680/regex-date-format-validation-on-java
-		//TODO: check if the new date is not more than a week from today;
+		//credit to stackoverflow for the date validation: http://stackoverflow.com/questions/2149680/regex-date-format-validation-on-java	
 		boolean validDate= false;
 		String newDate;
 		Date today;
