@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 public class Admin extends User{
@@ -60,12 +61,14 @@ public class Admin extends User{
 			System.exit(1);
 		}
 	}
+
 	//display the possible actions on a book
 	//allow books with no author but no authors with no books
 	private void bookAuthorMain(){
 		ArrayList<String> options = new ArrayList<String>();
-		options.add("Add Book and Authors");
-		options.add("Edit/Delete Book and Author");
+		options.add("Add a book and its author(s)");
+		options.add("Edit a book and its author(s)");
+		options.add("Delete a book");
 		options.add("Go one step up in the menu");
 		System.out.println("What would you like to do with the books and authors?");
 		displayOptions(options);
@@ -76,10 +79,14 @@ public class Admin extends User{
 			addBook();
 			break;
 		case 2:
-			//add book and authors
-			//editBook();
+			System.out.println("Here are all the books in the system:");
+			displayBooks();
+			getInputString();
 			break;
 		case 3:
+			//delete a book			
+			break;
+		case 4:
 			//Exit to previous menu
 			adminMenu();
 			break;
@@ -136,6 +143,7 @@ public class Admin extends User{
 			System.err.println("Error while connecting to the database");
 		}	
 	}
+
 	//insert the book in the database and return the new book's id
 	private int insertBook(String title,int pubId){
 		int id = -1;
@@ -160,7 +168,6 @@ public class Admin extends User{
 		}
 		return id;	
 	}
-
 
 	//insert the author in the database, return the new entry's id
 	private int insertAuthor(String name){
@@ -193,6 +200,7 @@ public class Admin extends User{
 		}
 		return id;
 	}
+
 	//connect the author and their books in tbl_book_author
 	//has to run every time we add a book
 	private void linkAuthorBook(int authorId, int bookId){
@@ -206,6 +214,60 @@ public class Admin extends User{
 		} catch (SQLException e) {
 			System.err.println("Error while connecting to the Database");
 		}		
+	}
+	private ArrayList<String> getAuthors(int bookId){
+		ArrayList<String> authors= new ArrayList<String>();
+		try {
+			Connection conn = getConnection();
+			PreparedStatement pstmt = conn.prepareStatement("SELECT authorName FROM tbl_author JOIN tbl_book_authors ON tbl_author.authorId = tbl_book_authors.authorId WHERE bookId = ?");
+			pstmt.setInt(1, bookId);
+			ResultSet rs = pstmt.executeQuery();
+
+			while(rs.next()){
+				authors.add(rs.getString("authorName"));
+			}
+		} catch (SQLException e) {
+			System.err.println("Error while connecting to the database");
+		}
+		return authors;
+	}
+	private void displayBooks( ){
+		ArrayList<String> toDisplay = new ArrayList<String>();
+		LinkedHashMap<Integer,String> books= getAllBooks();
+		for(Integer bookId: books.keySet()){
+			ArrayList<String> authors = getAuthors(bookId);
+			if(authors.size()==0){
+				toDisplay.add(books.get(bookId)+" :UNKNOWN AUTHOR");
+			}
+			else{
+				String authorString = " by "+ authors.get(0);
+				for(int i=1;i<authors.size();i++){
+					if(i==authors.size()-1){
+						authorString+= " & "+authors.get(i);
+					}
+					else{
+						authorString+= ", "+authors.get(i);
+					}
+				}
+				toDisplay.add(books.get(bookId)+ authorString);
+			}
+		}
+		displayOptions(toDisplay);
+	}
+	private LinkedHashMap<Integer,String> getAllBooks(){
+		LinkedHashMap<Integer,String> books= new LinkedHashMap<Integer,String>();
+		try {
+			Connection conn= getConnection();
+			Statement pstmt = conn.createStatement();
+			ResultSet rs = pstmt.executeQuery("SELECT bookId,title FROM tbl_book");
+			while(rs.next()){
+				books.put(rs.getInt("bookId"), rs.getString("title"));
+			}
+
+		} catch (SQLException e) {
+			System.err.println("Error while connecting to the database");
+		}
+		return books;
 	}
 	//diplay the possible effects to a publisher
 	private void publisherMain(){
@@ -245,6 +307,7 @@ public class Admin extends User{
 		int pubId= insertPublisher(pubName,pubAddress,pubPhone);
 		return pubId;
 	}
+
 	//insert the publisher in the database
 	private int insertPublisher(String name, String address, String phone){
 		int id=-1;
@@ -302,6 +365,7 @@ public class Admin extends User{
 			System.exit(1);
 		}
 	}
+
 	//gather the library's information
 	//insert the library in the database
 	private int addLibrary(){
