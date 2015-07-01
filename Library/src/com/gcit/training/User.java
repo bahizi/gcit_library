@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class User {
+	private Scanner sc;
+	public User(){
+		sc = new Scanner(System.in);
+	}
 	protected Connection getConnection() throws SQLException{
 		return DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root","!umug3nI4"); 
 	}
@@ -17,7 +21,6 @@ public class User {
 		}		
 	}
 	public int getInputInt(int min, int max){
-		Scanner sc= new Scanner(System.in);
 		System.out.println("Input choice number ");
 		System.out.print(">>");
 		String ina= sc.nextLine();
@@ -40,11 +43,15 @@ public class User {
 	//dont share the scanner
 	
 	public  String getInputString(){
-		Scanner sc= new Scanner(System.in);
 		System.out.print(">>");
 		String input= sc.nextLine();
-		while(input.length()<2){
-			System.out.println("Your input is too short. Try again.");
+		while(input.length()<2 | input.length()>45){
+			if(input.length()>45){
+				System.out.println("Your input is too long. Try again with less than 45 characters");					
+			}
+			else{
+				System.out.println("Your input is too short. Try again with more than 2 characters.");					
+			}
 			System.out.print(">>");
 			input= sc.nextLine();
 		}

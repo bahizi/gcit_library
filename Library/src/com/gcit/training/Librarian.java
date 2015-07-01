@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 public class Librarian extends User{
 	public Librarian(){
+		super();
 		lib1();		
 	}
 	private void lib1(){

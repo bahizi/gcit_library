@@ -11,6 +11,7 @@ import java.util.Date;
 public class Borrower extends User{
 	private Integer cardNumber;
 	public Borrower(){
+		super();
 		authenticate();
 		if (this.cardNumber!=null){//if the user didn't cancel the athentication
 			pickAction();

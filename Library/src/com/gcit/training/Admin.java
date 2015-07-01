@@ -14,6 +14,7 @@ import java.util.Locale;
 
 public class Admin extends User{
 	public Admin(){
+		super();
 		adminMenu();
 	}
 	//show the main objects that the admin can affect
@@ -57,8 +58,8 @@ public class Admin extends User{
 			//this case should never happen. if it does, something is wrong with getInputInt
 			System.err.println("Invalid input.");
 			System.exit(1);
-			}
 		}
+	}
 	//display the possible actions on a book
 	//allow books with no author but no authors with no books
 	private void bookAuthorMain(){
@@ -87,7 +88,7 @@ public class Admin extends User{
 			System.err.println("Invalid input.");
 		}
 	}
-	
+
 	//receive the necessary information to add a book	
 	private void addBook(){
 		System.out.println("What is the title of the new book?");
@@ -159,17 +160,8 @@ public class Admin extends User{
 		}
 		return id;	
 	}
-	//gather the necessary information to add a publisher
-	private int addPublisher(){
-		System.out.println("What is the Publisher's name?");
-		String pubName= getInputString();
-		System.out.println("What is the Publisher's address?");
-		String pubAddress=getInputString();
-		System.out.println("What is the Publisher's phone number?");
-		String pubPhone=getInputString();
-		int pubId= insertPublisher(pubName,pubAddress,pubPhone);
-		return pubId;
-	}
+
+
 	//insert the author in the database, return the new entry's id
 	private int insertAuthor(String name){
 		int id=-1;
@@ -197,32 +189,6 @@ public class Admin extends User{
 		}
 		if(id<0){
 			System.out.println("Failed to Record Author.Sorry");
-			System.exit(1);
-		}
-		return id;
-	}
-	//insert the publisher in the database
-	private int insertPublisher(String name, String address, String phone){
-		int id=-1;
-		try {
-			Connection conn= getConnection();
-			PreparedStatement pstmt= conn.prepareStatement("INSERT INTO tbl_publisher (publisherName, publisherAddress, publisherPhone) VALUES(?,?,?)");
-			pstmt.setString(1, name);
-			pstmt.setString(2, address);
-			pstmt.setString(3, phone);
-			pstmt.execute();
-			Statement stmt= conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID() AS newId");
-			if(rs.next()){
-				id= rs.getInt("newId");
-			}	
-
-			conn.close();
-		} catch (SQLException e) {
-			System.err.println("error while connecting to the database");
-		}
-		if(id<0){
-			System.out.println("Failed to Record Publisher.Sorry");
 			System.exit(1);
 		}
 		return id;
@@ -267,6 +233,45 @@ public class Admin extends User{
 		}
 
 	}
+
+	//gather the necessary information to add a publisher
+	private int addPublisher(){
+		System.out.println("What is the Publisher's name?");
+		String pubName= getInputString();
+		System.out.println("What is the Publisher's address?");
+		String pubAddress=getInputString();
+		System.out.println("What is the Publisher's phone number?");
+		String pubPhone=getInputString();
+		int pubId= insertPublisher(pubName,pubAddress,pubPhone);
+		return pubId;
+	}
+	//insert the publisher in the database
+	private int insertPublisher(String name, String address, String phone){
+		int id=-1;
+		try {
+			Connection conn= getConnection();
+			PreparedStatement pstmt= conn.prepareStatement("INSERT INTO tbl_publisher (publisherName, publisherAddress, publisherPhone) VALUES(?,?,?)");
+			pstmt.setString(1, name);
+			pstmt.setString(2, address);
+			pstmt.setString(3, phone);
+			pstmt.execute();
+			Statement stmt= conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID() AS newId");
+			if(rs.next()){
+				id= rs.getInt("newId");
+			}	
+
+			conn.close();
+		} catch (SQLException e) {
+			System.err.println("error while connecting to the database");
+		}
+		if(id<0){
+			System.out.println("Failed to Record Publisher.Sorry");
+			System.exit(1);
+		}
+		return id;
+	}
+
 	//display the possible effects to a library branch
 	private void libraryBranchMain(){
 		ArrayList<String> options = new ArrayList<String>();
@@ -297,6 +302,34 @@ public class Admin extends User{
 			System.exit(1);
 		}
 	}
+	//gather the library's information
+	//insert the library in the database
+	private int addLibrary(){
+		int id = -1;
+		System.out.println("Branch Name: ");
+		String name= getInputString();
+		System.out.println("Address: ");
+		String address= getInputString();;
+		try {
+			Connection conn= getConnection();
+			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tbl_library_branch (branchName, branchAddress) VALUES(?,?)");
+			pstmt.setString(1, name);
+			pstmt.setString(2, address);
+			pstmt.execute();
+			Statement stmt= conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID() AS newId");
+			if(rs.next()){
+				id= rs.getInt("newId");
+			} 
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//System.err.println("Error while connecting to the database. Sorry");
+		}
+
+		return id;
+	}
+
 	//display the possible actions on a borrower
 	//let the user choose an action and then call the appropriate method
 	//when done, display this menu again, unless user chooses to exit
@@ -329,34 +362,7 @@ public class Admin extends User{
 			System.exit(1);
 		}
 	}
-	//gather the library's information
-	//insert the library in the database
-	private int addLibrary(){
-		int id = -1;
-		System.out.println("Branch Name: ");
-		String name= getInputString();
-		System.out.println("Address: ");
-		String address= getInputString();;
-		try {
-			Connection conn= getConnection();
-			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tbl_library_branch (branchName, branchAddress) VALUES(?,?)");
-			pstmt.setString(1, name);
-			pstmt.setString(2, address);
-			pstmt.execute();
-			Statement stmt= conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID() AS newId");
-			if(rs.next()){
-				id= rs.getInt("newId");
-			} 
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			//System.err.println("Error while connecting to the database. Sorry");
-		}
-
-		return id;
-	}
 	//gather the borrower's information
 	private int addBorrower(){
 		int id = -1;
@@ -385,7 +391,7 @@ public class Admin extends User{
 		}
 		return id;		
 	}
-	
+
 	//display the possible effects on a book loan
 	private void loanMain(){
 		System.out.println("Which library processed the loan?");
@@ -474,8 +480,8 @@ public class Admin extends User{
 				else{
 					validDate= true;	
 				}
-				
-				
+
+
 			} catch (ParseException e) {
 				validDate=false;
 			}	
