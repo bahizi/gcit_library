@@ -101,12 +101,12 @@ public class Borrower extends User{
 	private void bor2(int libraryId){
 		try {
 			Connection conn = getConnection();
-			PreparedStatement pstmt = conn.prepareStatement("SELECT title FROM tbl_book JOIN tbl_book_copies ON tbl_book.bookId=tbl_book_copies.bookId WHERE branchId = ?  AND noOfCopies>0");
+			PreparedStatement pstmt = conn.prepareStatement("SELECT title,noOfCopies FROM tbl_book JOIN tbl_book_copies ON tbl_book.bookId=tbl_book_copies.bookId WHERE branchId = ?  AND noOfCopies>0");
 			pstmt.setInt(1, libraryId);
 			ResultSet rs = pstmt.executeQuery();
 			ArrayList<String> books= new ArrayList<String>();
 			while(rs.next()){
-				books.add(rs.getString("title"));
+				books.add(rs.getString("title")+" : "+rs.getInt("noOfCopies"));
 			}
 			conn.close();
 			books.add("Cancel Operation");
@@ -157,7 +157,7 @@ public class Borrower extends User{
 	private void recordBookLoan(int libId, int bookId){
 		try {
 			Connection conn = getConnection();
-			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tbl_book_loans VALUES(?,?,?,?,?,?)");
+			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tbl_book_loans VALUES(?,?,?,?,?,?)",PreparedStatement.RETURN_GENERATED_KEYS);
 			Date date= new Date();
 			pstmt.setInt(1, bookId);
 			pstmt.setInt(2, libId);
@@ -167,6 +167,13 @@ public class Borrower extends User{
 			pstmt.setTimestamp(6,null);
 
 			pstmt.executeUpdate();
+			ResultSet rs= pstmt.getGeneratedKeys();
+			int count =1;
+			while(rs.next()){
+				System.out.println(count+". "+(rs.getInt("bookId")==bookId) );//+" | "+ (rs.getInt(1)== libId)+" | "+ (rs.getInt(1)== this.cardNumber));
+				count++;
+			}
+			System.out.println((rs.getInt(1)==bookId) );//+" | "+ (rs.getInt(1)== libId)+" | "+ (rs.getInt(1)== this.cardNumber));
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

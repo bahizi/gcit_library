@@ -1,7 +1,9 @@
 package com.gcit.training;
 
 import java.util.ArrayList;
-
+//TODO FIX the BOOK INSERTION: ADD GENRE OPTION
+//TODO ALLOW USER TO SKIP ADDING PUBLISHER, GENRE AND AUTHOR
+//TODO MAKE NEW INPUT 
 public class Main {
 	private static User user;	
 	public static void main(String[] args){

@@ -1,22 +1,25 @@
-package com.gcit.training;
+package com.gcit.lms.service;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-public class User {
+public class BaseService {
 	private Scanner sc;
-	public User(){
+	public BaseService(){
 		sc = new Scanner(System.in);
 	}
-	public void displayOptions(List<String> options){
+	public <T> void displayOptions(List<T> options){
 		int s= options.size();
 		for(int i = 1; i<s+1; i++){
 			System.out.println(i+". "+ options.get(i-1));			
 		}		
 	}
-	public int getChoiceNumber(ArrayList<String> options, ArrayList<String> controllers){
+	//displays Menu with pages, returns positive indices if the user picks something off the menu
+	//return negative integers if the user picks something from the controllers (e.g. Cancel, skip, up the menu, etc.)
+	public <T> int getChoiceNumber(List<T> options, List<String> controllers){
 		int items = options.size();
 		int pages= items/10;
 		if(pages%10 !=0){
@@ -29,7 +32,7 @@ public class User {
 			HashMap<Integer, String> actions= new HashMap<Integer,String>();
 			HashMap<Integer,Integer> controls = new HashMap<Integer, Integer>();			
 			int remainder= options.size()-(curPage*10);
-			List<String> displayPage =  options.subList(curPage*10,(curPage*10)+Math.min(10,remainder));
+			List<T> displayPage =  options.subList(curPage*10,(curPage*10)+Math.min(10,remainder));
 			displayOptions(displayPage);
 			System.out.println("-----------------------------------");
 			for(int i = 0; i<controllers.size(); i++){
@@ -93,9 +96,8 @@ public class User {
 
 		return in;
 	}	
-	//dont share the scanner
 
-	public  String getInputString(){
+	public String getInputString(){
 		System.out.print(">>");
 		String input= sc.nextLine();
 		while(input.length()<2 | input.length()>45){
@@ -111,8 +113,5 @@ public class User {
 		System.out.println("****************************************");
 
 		return input;
-
 	}
-
-
 }
