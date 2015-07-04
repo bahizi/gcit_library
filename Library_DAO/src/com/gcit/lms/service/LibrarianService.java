@@ -13,9 +13,9 @@ import com.gcit.lms.domain.LibraryBranch;
 public class LibrarianService extends BaseService {
 	public LibrarianService(){
 		super(); 
-		libMainMenu();		
+		menu();		
 	}
-	public void libMainMenu(){
+	public void menu(){
 		List<Object> options= new ArrayList<Object>();
 		ArrayList<String> actions = new ArrayList<String>();
 		options.add("Enter Branch you manage");
@@ -47,22 +47,87 @@ public class LibrarianService extends BaseService {
 			List<String> actions = new ArrayList<String>();
 			actions.add("Previous Menu");
 			System.out.println("Here are the available branches. Pick one:");
-			
-			getChoiceNumber(branches, actions);
-			int in= getInputInt(1,branches.size());
+
+			int in =getChoiceNumber(branches, actions);
 			if (in>0){
-				lib3(in,branches.get(in-1));
+				libMenu(branches.get(in-1));
 			}
 			else{
-				libMainMenu();
+				menu();
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public void lib3(int i, LibraryBranch branch){
+	public void libMenu(LibraryBranch branch){
+		System.out.println("Working with "+branch);
+		ArrayList<String> options = new ArrayList<String>();
+		options.add("Update the details of the library");
+		options.add("Add book copies to the branch");
+
+		ArrayList<String> actions = new ArrayList<String>();		
+		actions.add("Previous Menu");
+
+		int choice= getChoiceNumber(options,actions);
+		switch(choice){
+		case -1:
+			viewLibraries();
+			break;
+		case 1:
+			updateLibrary(branch);
+			libMenu(branch);
+			break;
+		case 2:
+			addBookCopies(branch);
+			libMenu(branch);
+			break;
+		default:
+			//this case should never happen
+			//if it does, something is wrong in BaseService's getChoiceNumber();
+			System.err.println("Invalid action: Action #"+choice);
+			break;
+		}
+	}
+
+	private void updateLibrary(LibraryBranch branch){
+		System.out.println("You have chosen to update the following branch:");
+		System.out.println("\t*Branch Name: "+branch.getBranchId());
+		System.out.println("\t*Branch Address: "+branch.getAddress());
+		String name = renameLibrary();
+		String address = changeLibraryAddress();
+		if(name != "N/A"){
+			branch.setBranchName(name);
+		}
+		if(address != "N/A"){
+			branch.setAddress(address);
+		}
+		ConnectionUtil c = new ConnectionUtil();
+		Connection conn;
+		try {
+			conn = c.createConnection();
+			LibraryBranchDAO libDAO = new LibraryBranchDAO(conn);
+			libDAO.update(branch);
+			conn.close();
+		} catch (Exception e) {
+			System.err.println("Error: You changes were not saved. Try again. Sorry");
+		}
 		
+	}
+	private String renameLibrary(){
+		String res = "";
+		System.out.println("Input new Library Name [ N/A to skip ]");
+		res = getInputString();
+		return res;
+	}
+	private String changeLibraryAddress(){
+		String res = "";
+		System.out.println("Input new Library Address. [ N/A to skip ]");
+		res = getInputString();
+		return res;
+	}
+	private void addBookCopies(LibraryBranch branch){
+
 	}
 
 }

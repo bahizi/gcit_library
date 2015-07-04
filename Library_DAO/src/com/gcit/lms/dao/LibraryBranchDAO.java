@@ -22,6 +22,7 @@ public class LibraryBranchDAO extends BaseDAO<LibraryBranch>{
 	}
 	public void update(LibraryBranch branch) throws Exception{
 		save("UPDATE tbl_library_branch SET branchName = ?, branchAddress = ? WHERE branchId = ?", new Object[]{branch.getBranchName(), branch.getAddress(),branch.getBranchId()});
+		System.out.println("updated "+branch.getBranchName()+" "+branch.getBranchId()+" "+branch.getAddress());
 	}
 	public void delete(LibraryBranch branch) throws Exception{
 	save("DELETE FROM tbl_library_branch WHERE branchId = ?", new Object[]{branch.getBranchId()});	

@@ -20,7 +20,6 @@ public abstract class BaseDAO<T> {
 
 	public void save(String query, Object[] vals) throws Exception{
 		Connection conn = getConnection();
-
 		PreparedStatement stmt = conn.prepareStatement(query);
 		int count = 1;
 		for(Object o: vals){

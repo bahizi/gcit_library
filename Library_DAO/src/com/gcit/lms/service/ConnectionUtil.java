@@ -9,7 +9,7 @@ public class ConnectionUtil {
 		String driver = "com.mysql.jdbc.Driver";
 		String connection = "jdbc:mysql://localhost:3306/library";
 		String user = "root";
-		String pass = "root";
+		String pass = "!umug3nI4";
 		Class.forName(driver);
 		Connection conn = DriverManager.getConnection(connection, user, pass);
 		conn.setAutoCommit(false);
