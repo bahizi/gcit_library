@@ -15,17 +15,17 @@ public class BookLoanDAO extends BaseDAO<BookLoan>{
 		save("INSERT INTO tbl_book_loans (bookId,branchId,cardNo,dateOut,dueDate, dateIn) VALUES(?,?,?,?,?,?)", new Object[]{bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(),bookLoan.getDateOut(),bookLoan.getDueDate(), bookLoan.getDateIn()});		
 	}
 	public void update(BookLoan bookLoan) throws Exception{
-		save("UPDATE tbl_book_loans SET bookId = ?, branchId =?, cardNo = ?, dateOut = ?, dueDate = ?, dateIn = ?", new Object[]{bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(),bookLoan.getDateOut(),bookLoan.getDueDate(), bookLoan.getDateIn()});		
+		save("UPDATE tbl_book_loans SET dateIn = ? WHERE  bookId = ? AND branchId =? AND cardNo = ? AND dateOut = ? ", new Object[]{bookLoan.getDateIn(),bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(), bookLoan.getDateOut()});		
 	}
 	public void delete(BookLoan bookLoan) throws Exception{
-		save("DELETE FROM tbl_book_loans WHERE bookId = ? AND branchId = ? AND cardNo = ?",new Object[]{bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo()});		
+		save("DELETE FROM tbl_book_loans WHERE bookId = ? AND branchId = ? AND cardNo = ? AND dateOut = ?",new Object[]{bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(), bookLoan.getDateOut()});		
 	}
 	public List<BookLoan> readAll() throws Exception{
 		return (List<BookLoan>) read("SELECT * FROM tbl_book_loans", null);
 	}
-	
+
 	public BookLoan readOne(int bookId,int branchId, int cardNo) throws Exception{
-		List<BookLoan> bookLoans = (List<BookLoan>) read("SELECT * FROM tbl_book WHERE bookId = ?, branchId = ?, cardNo = ?", new Object[] {bookId,branchId,cardNo});
+		List<BookLoan> bookLoans = (List<BookLoan>) read("SELECT * FROM tbl_book_loans WHERE bookId = ? AND  branchId = ? AND cardNo = ? ", new Object[] {bookId,branchId,cardNo});
 		if(bookLoans!=null && bookLoans.size()>0){
 			return bookLoans.get(0);
 		}
@@ -39,16 +39,14 @@ public class BookLoanDAO extends BaseDAO<BookLoan>{
 	public List<BookLoan> extractDataFirstLevel(ResultSet rs) throws Exception {
 		List<BookLoan> bookLoans = new ArrayList<BookLoan>();
 		while(rs.next()){
-			BookLoan loan = new BookLoan();
-			while(rs.next()){
-				loan.setBookId(rs.getInt("bookId"));
-				loan.setBranchId(rs.getInt("branchId"));
-				loan.setCardNo(rs.getInt("cardNo"));
-				loan.setDateOut(rs.getTimestamp("dateOut"));
-				loan.setDueDate(rs.getTimestamp("dueDate"));
-				loan.setDateIn(rs.getTimestamp("dateIn"));
-				bookLoans.add(loan);
-			}
+			BookLoan loan = new BookLoan();			
+			loan.setBookId(rs.getInt("bookId"));
+			loan.setBranchId(rs.getInt("branchId"));
+			loan.setCardNo(rs.getInt("cardNo"));
+			loan.setDateOut(rs.getString("dateOut"));
+			loan.setDueDate(rs.getString("dueDate"));
+			loan.setDateIn(rs.getString("dateIn"));
+			bookLoans.add(loan);		
 		}
 		return bookLoans;
 	}

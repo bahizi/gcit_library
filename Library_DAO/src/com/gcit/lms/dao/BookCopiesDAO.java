@@ -28,9 +28,9 @@ public BookCopiesDAO(Connection conn) throws Exception {
 		return (List<BookCopies>) read("SELECT * FROM tbl_book_copies", null);	
 	}
 	@SuppressWarnings("unchecked")
-	public BookCopies readOne(BookCopies bookCopies) throws Exception{
+	public BookCopies readOne(int branchId, int bookId) throws Exception{
 		
-		List<BookCopies> b = (List<BookCopies>) read("SELECT * FROM tbl_book_copies WHERE bookId= ? AND branchId = ?", new Object[] {bookCopies.getBookId(), bookCopies.getBranchId()});
+		List<BookCopies> b = (List<BookCopies>) read("SELECT * FROM tbl_book_copies WHERE bookId= ? AND branchId = ?", new Object[] {bookId,branchId});
 		if(b!=null && b.size()>0){
 			return b.get(0);
 		}
@@ -38,7 +38,8 @@ public BookCopiesDAO(Connection conn) throws Exception {
 	}
 	@Override
 	public List<BookCopies> extractData(ResultSet rs) throws Exception {
-		return extractDataFirstLevel(rs);		
+		return extractDataFirstLevel(rs);
+		
 	}
 	@Override
 	public List<BookCopies> extractDataFirstLevel(ResultSet rs) throws Exception {

@@ -31,7 +31,7 @@ public class Main extends BaseService{
 				break;
 			case 3:
 				//GO TO BORROWER
-				service= new Borrower();				
+				service= new BorrowerService();				
 				break;			
 			default:
 				System.err.println("Invalid user choice: "+input);				

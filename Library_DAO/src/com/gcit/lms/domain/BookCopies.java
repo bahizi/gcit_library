@@ -39,7 +39,7 @@ public class BookCopies {
 		try {
 			conn = c.createConnection();
 			bookDAO = new BookDAO(conn);
-			book = bookDAO.readOne(getBookId());
+			book = bookDAO.readOne(getBookId());			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -63,7 +63,8 @@ public class BookCopies {
 	}
 	@Override
 	public String toString(){
-		String result = "";
+		
+		String result = "";		
 		result += fetchBook().toString()+" @ ";
 		result += fetchBranch().toString()+ ": ";
 		result += getNoOfCopies()+" copies";		

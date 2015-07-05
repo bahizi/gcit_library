@@ -33,7 +33,14 @@ public class BaseService {
 			HashMap<Integer,Integer> controls = new HashMap<Integer, Integer>();			
 			int remainder= options.size()-(curPage*10);
 			List<T> displayPage =  options.subList(curPage*10,(curPage*10)+Math.min(10,remainder));
-			displayOptions(displayPage);
+			
+			if(displayPage.size()==0){
+				System.out.println("***No data to display***");
+			}
+			else{
+				displayOptions(displayPage);
+			}
+			
 			System.out.println("-----------------------------------");
 			for(int i = 0; i<controllers.size(); i++){
 				System.out.println((displayPage.size()+i+1)+". "+ controllers.get(i));
@@ -42,7 +49,7 @@ public class BaseService {
 			System.out.println("-----------------------------------");
 			if(curPage>0){				
 				System.out.print("<<<<Previous Page ["+(displayPage.size()+controllers.size()+1)+"]");
-				actions.put((displayPage.size()+controllers.size()+2), "prev");
+				actions.put((displayPage.size()+controllers.size()+1), "prev");
 			}
 			
 			if(curPage<pages-1){
@@ -50,7 +57,7 @@ public class BaseService {
 					System.out.print(" -|- ");
 				}
 				System.out.print("Next Page["+(displayPage.size()+controllers.size()+actions.size()+1)+"]>>>>"  );
-				actions.put((displayPage.size()+controllers.size()+actions.size()+2), "next");
+				actions.put((displayPage.size()+controllers.size()+actions.size()+1), "next");
 			}
 			
 			if(actions.size()>0){
@@ -58,7 +65,7 @@ public class BaseService {
 				System.out.println("***Page "+(curPage+1) +" of "+pages+"***");
 				System.out.println("-----------------------------------");
 			}
-			choice = getInputInt(1,displayPage.size()+controllers.size()+actions.size()+1);			
+			choice = getInputInt(1,displayPage.size()+controllers.size()+actions.size());			
 			if(choice>0 && choice<displayPage.size()+1){
 				return (curPage*10+choice);
 			}

@@ -25,9 +25,9 @@ public abstract class BaseDAO<T> {
 		for(Object o: vals){
 			stmt.setObject(count, o);
 			count++;
-		}
-		
+		}		
 		stmt.executeUpdate();
+		
 	}
 	
 	public int saveWithID(String query, Object[] vals) throws Exception{

@@ -8,10 +8,11 @@ import java.util.List;
 import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
 import com.gcit.lms.domain.Genre;
+import com.gcit.lms.domain.LibraryBranch;
 import com.gcit.lms.domain.Publisher;
 @SuppressWarnings("unchecked")
 public class BookDAO extends BaseDAO<Book>{
-	
+
 	public BookDAO(Connection conn) throws Exception {
 		super(conn);
 	}
@@ -19,10 +20,15 @@ public class BookDAO extends BaseDAO<Book>{
 		int bookId =  saveWithID("INSERT INTO tbl_book (title, publisherId) VALUES(?,?)", new Object[] {book.getTitle(),book.getPublisher().getPublisherId()});
 		book.setBookId(bookId);
 		for(Author author: book.getAuthors()){
-			save("INSERT INTO tbl_book_authors ('bookId','authorId') VALUES(?,?)", new Object[]{book.getBookId(),author.getAuthorId()});
+			save("INSERT INTO tbl_book_authors (bookId,authorId) VALUES(?,?)", new Object[]{book.getBookId(),author.getAuthorId()});
 		}
 		for(Genre genre: book.getGenres()){
-			save("INSERT INTO tbl_book_authors ('bookId','genre_id') VALUES(?,?)", new Object[]{book.getBookId(),genre.getGenreId()});
+			save("INSERT INTO tbl_book_authors (bookId,genre_id) VALUES(?,?)", new Object[]{book.getBookId(),genre.getGenreId()});
+		}
+		LibraryBranchDAO libDAO = new LibraryBranchDAO(getConnection());
+		List<LibraryBranch> branches = libDAO.readAll();
+		for(LibraryBranch branch: branches){
+			save("INSERT INTO tbl_book_copies () (branchId,bookId,noOfCopies) VALUES(?,?,?)", new Object[] {branch.getBranchId(),book.getBookId(),0});
 		}
 	}
 	public void update(Book book) throws Exception{
@@ -40,7 +46,7 @@ public class BookDAO extends BaseDAO<Book>{
 		PublisherDAO pubDAO = new PublisherDAO(getConnection());
 		return pubDAO.readOne(pubId);
 	}
-	
+
 	public List<Author> getAuthors(int bookId) throws Exception{
 		AuthorDAO authorDAO = new AuthorDAO(getConnection());
 		String sql = "SELECT * FROM tbl_book_authors JOIN tbl_author ON tbl_book_authors.authorId = tbl_author.authorId WHERE bookId = ?";
@@ -54,7 +60,7 @@ public class BookDAO extends BaseDAO<Book>{
 		return genres;
 	}
 	public List<Book> readAll() throws Exception{
-		return (List<Book>) read("SELECT * FROM tbl_book", null);		
+		return (List<Book>) read("SELECT * FROM tbl_book ORDERY by title", null);		
 	}
 
 	public Book readOne(int bookId) throws Exception {
@@ -69,25 +75,25 @@ public class BookDAO extends BaseDAO<Book>{
 	@Override
 	public List<Book> extractData(ResultSet rs) throws Exception {
 		List<Book> books = new ArrayList<Book>();
-		
 		while(rs.next()){
 			Book book = new Book();
-			while (rs.next()){
-				book.setBookId(rs.getInt("bookId"));
-				book.setTitle(rs.getString("title"));
-				book.setPublisher(this.getPublisher(rs.getInt("pubId")));
-				///potential infinite method calls below this point
-				book.setAuthors(this.getAuthors(rs.getInt("bookId")));
-				book.setGenres(this.getGenres(rs.getInt("bookId")));
-				books.add(book);
-			}
+
+			book.setBookId(rs.getInt("bookId"));
+			book.setTitle(rs.getString("title"));
+			book.setPublisher(this.getPublisher(rs.getInt("pubId")));
+			///potential infinite method calls below this point
+			book.setAuthors(this.getAuthors(rs.getInt("bookId")));
+			book.setGenres(this.getGenres(rs.getInt("bookId")));
+
+			books.add(book);
+
 		}
 		return books;
 	}
 	@Override
 	public List<Book> extractDataFirstLevel(ResultSet rs) throws Exception {
 		List<Book> books = new ArrayList<Book>();
-				
+
 		while(rs.next()){
 			Book book = new Book();
 			book.setBookId(rs.getInt("bookId"));

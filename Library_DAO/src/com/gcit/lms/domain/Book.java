@@ -46,10 +46,10 @@ public class Book {
 			result += " by " + authors.get(0).toString();
 			for(int i = 1; i< authors.size();i++){
 				if(i==authors.size()-1){
-					result+= ", ";
+					result+= " & ";
 				}
 				else{
-					result+= " & ";
+					result+= " , ";
 				}
 				result+= authors.get(i).toString();			
 			}

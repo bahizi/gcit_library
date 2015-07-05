@@ -58,7 +58,7 @@ public class AuthorDAO extends BaseDAO<Author> {
 			Author a = new Author();
 			a.setAuthorId(rs.getInt("authorId"));
 			a.setAuthorName(rs.getString("authorName"));
-			List<Book> books = (List<Book>) bDao.readFirstLevel("SELECT * FROM tbl_books WHERE bookId In"
+			List<Book> books = (List<Book>) bDao.readFirstLevel("SELECT * FROM tbl_book WHERE bookId In"
 					+ "(SELECT bookId FROM tbl_book_authors WHERE authorId=?)", new Object[] {rs.getInt("authorId")});
 			a.setBooks(books);
 			authors.add(a);

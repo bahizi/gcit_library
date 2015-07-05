@@ -2,6 +2,8 @@ package com.gcit.lms.domain;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import com.gcit.lms.dao.BookDAO;
 import com.gcit.lms.dao.BorrowerDAO;
@@ -12,9 +14,9 @@ public class BookLoan {
 	private int bookId;
 	private int branchId;
 	private int cardNo;
-	private Timestamp dateOut;
-	private Timestamp dueDate;
-	private Timestamp dateIn;
+	private String dateOut;
+	private String dueDate;
+	private String dateIn;
 	
 	public int getBookId() {
 		return bookId;
@@ -34,23 +36,23 @@ public class BookLoan {
 	public void setCardNo(int cardNo) {
 		this.cardNo = cardNo;
 	}
-	public Timestamp getDateOut() {
+	public String getDateOut() {
 		return dateOut;
 	}
-	public void setDateOut(Timestamp dateOut) {
+	public void setDateOut(String dateOut) {
 		this.dateOut = dateOut;
 	}
-	public Timestamp getDueDate() {
+	public String getDueDate() {
 		return dueDate;
 	}
-	public void setDueDate(Timestamp dateTime) {
+	public void setDueDate(String dateTime) {
 		this.dueDate = dateTime;
 	}
-	public Timestamp getDateIn() {
+	public String getDateIn() {
 		return dateIn;
 	}
-	public void setDateIn(Timestamp dateIn) {
-		this.dateIn = dateIn;
+	public void setDateIn(String dateIn) {
+		this.dateIn =dateIn;
 	}
 	public Book fetchBook(){
 		ConnectionUtil c= new ConnectionUtil();
@@ -100,9 +102,7 @@ public class BookLoan {
 	@Override
 	public String toString(){
 		String result = "";
-		result += fetchBorrower().toString() ;
-		result += " : "+fetchBook().toString();
-		result += " @ " + fetchBranch().toString();
+		result +=fetchBook().toString();
 		result += "[Due Date:"+ this.getDueDate()+"]";		
 		return result;
 	}
