@@ -17,23 +17,24 @@ public class BookDAO extends BaseDAO<Book>{
 		super(conn);
 	}
 	public void create(Book book) throws Exception{
-		int bookId =  saveWithID("INSERT INTO tbl_book (title, publisherId) VALUES(?,?)", new Object[] {book.getTitle(),book.getPublisher().getPublisherId()});
+		int bookId =  saveWithID("INSERT INTO tbl_book (title, pubId) VALUES(?,?)", new Object[] {book.getTitle(),book.getPublisher().getPublisherId()});
 		book.setBookId(bookId);
 		for(Author author: book.getAuthors()){
 			save("INSERT INTO tbl_book_authors (bookId,authorId) VALUES(?,?)", new Object[]{book.getBookId(),author.getAuthorId()});
 		}
 		for(Genre genre: book.getGenres()){
-			save("INSERT INTO tbl_book_authors (bookId,genre_id) VALUES(?,?)", new Object[]{book.getBookId(),genre.getGenreId()});
+			save("INSERT INTO tbl_book_genres (bookId,genre_id) VALUES(?,?)", new Object[]{book.getBookId(),genre.getGenreId()});
 		}
 		LibraryBranchDAO libDAO = new LibraryBranchDAO(getConnection());
 		List<LibraryBranch> branches = libDAO.readAll();
 		for(LibraryBranch branch: branches){
-			save("INSERT INTO tbl_book_copies () (branchId,bookId,noOfCopies) VALUES(?,?,?)", new Object[] {branch.getBranchId(),book.getBookId(),0});
+			save("INSERT INTO tbl_book_copies(branchId,bookId,noOfCopies) VALUES(?,?,?)", new Object[] {branch.getBranchId(),book.getBookId(),0});
 		}
 	}
 	public void update(Book book) throws Exception{
 		save("UPDATE tbl_book SET title = ?, publisherId = ? WHERE bookId = ?",
 				new Object[] { book.getTitle(),book.getPublisher().getPublisherId(),book.getBookId()});
+		
 	}
 	public void delete(Book book) throws Exception{
 		save("DELETE FROM tbl_book WHERE bookId = ?", new Object[]{book.getBookId()});
@@ -60,7 +61,7 @@ public class BookDAO extends BaseDAO<Book>{
 		return genres;
 	}
 	public List<Book> readAll() throws Exception{
-		return (List<Book>) read("SELECT * FROM tbl_book ORDERY by title", null);		
+		return (List<Book>) read("SELECT * FROM tbl_book ORDER by title", null);		
 	}
 
 	public Book readOne(int bookId) throws Exception {

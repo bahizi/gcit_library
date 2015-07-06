@@ -50,6 +50,7 @@ public class BorrowerService extends BaseService {
 					}
 				}
 			}
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Failed to connect to the database. Sorry.");
@@ -99,8 +100,7 @@ public class BorrowerService extends BaseService {
 				}
 				System.out.println("****************************************");				
 				pickAction();
-			}	
-			
+			}		
 		}
 	}
 	private void returnBook(){
@@ -133,7 +133,7 @@ public class BorrowerService extends BaseService {
 			else{
 				pickAction();
 			}
-
+			conn.close();
 		} catch (Exception e) {
 			System.err.println("Exiting: error while connecting to the database.");
 			System.exit(1);
@@ -159,6 +159,7 @@ public class BorrowerService extends BaseService {
 			else{
 				pickAction();
 			}
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Exiting: error while connecting to the database.");
@@ -258,6 +259,7 @@ public class BorrowerService extends BaseService {
 			else{
 				pickAction();
 			}
+			conn.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -303,7 +305,7 @@ public class BorrowerService extends BaseService {
 			if(loan==null){
 				ret =false;
 			}
-
+			conn.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

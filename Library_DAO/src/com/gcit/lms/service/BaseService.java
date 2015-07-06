@@ -11,6 +11,12 @@ public class BaseService {
 	public BaseService(){
 		sc = new Scanner(System.in);
 	}
+	public Connection getConnection() throws Exception{
+		ConnectionUtil c = new ConnectionUtil();
+		Connection conn = c.createConnection();
+		return conn;
+	}
+	
 	public <T> void displayOptions(List<T> options){
 		int s= options.size();
 		for(int i = 1; i<s+1; i++){

@@ -38,8 +38,8 @@ public class LibrarianService extends BaseService {
 		}
 	}
 	private void viewLibraries(){
+		ConnectionUtil c = new ConnectionUtil();		
 		try {
-			ConnectionUtil c = new ConnectionUtil();
 			Connection conn =c.createConnection();
 			Statement stmt= conn.createStatement();
 			LibraryBranchDAO  libDAO = new LibraryBranchDAO(conn);
@@ -56,6 +56,7 @@ public class LibrarianService extends BaseService {
 			else{
 				menu();
 			}
+			conn.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

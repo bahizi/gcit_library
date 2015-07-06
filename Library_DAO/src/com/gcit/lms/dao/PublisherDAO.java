@@ -55,8 +55,8 @@ public class PublisherDAO extends BaseDAO<Publisher> {
 			Publisher pub = new Publisher();
 			pub.setPublisherId(rs.getInt("publisherId"));
 			pub.setPublisherName(rs.getString("publisherName"));
-			pub.setPublisherName(rs.getString("publisherAddress"));
-			pub.setPublisherPhone(rs.getString("publisherPhone"));
+			pub.setPublisherAddress(rs.getString("publisherAddress"));
+			pub.setPublisherPhone(rs.getString("publisherPhone"));			
 			publishers.add(pub);
 		}
 		return publishers;

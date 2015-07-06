@@ -27,7 +27,7 @@ public class Main extends BaseService{
 				break;
 			case 2:				
 				//GO TO ADMIN
-				service= new Admin();
+				service= new AdminService();
 				break;
 			case 3:
 				//GO TO BORROWER
