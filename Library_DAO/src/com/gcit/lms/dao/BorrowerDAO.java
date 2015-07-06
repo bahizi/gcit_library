@@ -20,7 +20,7 @@ public class BorrowerDAO extends BaseDAO<Borrower> {
 	}
 	
 	public void update(Borrower borrower) throws Exception{
-		save("UPDATE tbl_borrower SET name = ?, address = ?, phone = ? WHERE cardNo = ?", new Object[]{borrower.getName(), borrower.getAddress(), borrower.getPhone()});		
+		save("UPDATE tbl_borrower SET name = ?, address = ?, phone = ? WHERE cardNo = ?", new Object[]{borrower.getName(), borrower.getAddress(), borrower.getPhone(), borrower.getCardNo()});		
 	}
 	
 	public void delete(Borrower borrower) throws Exception{

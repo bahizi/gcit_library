@@ -1001,6 +1001,7 @@ public class AdminService extends BaseService{
 		case 2:
 			Borrower toEdit = showAllBorrowers();
 			if(toEdit!=null){
+				System.out.println("EDITING "+toEdit);
 				editBorrower(toEdit);
 			}
 			borrowerMain();
@@ -1008,7 +1009,7 @@ public class AdminService extends BaseService{
 		case 3:
 			Borrower toDelete = showAllBorrowers();
 			if(toDelete!=null){
-				editBorrower(toDelete);
+				deleteBorrower(toDelete);
 			}
 			borrowerMain();
 			break;			
@@ -1092,7 +1093,9 @@ public class AdminService extends BaseService{
 			
 			try{
 				BorrowerDAO borDAO = new BorrowerDAO(conn);
-				borDAO.update(bor);				
+				borDAO.update(bor);	
+				conn.commit();
+				conn.close();			
 			}
 			catch(Exception e){
 				conn.rollback();
