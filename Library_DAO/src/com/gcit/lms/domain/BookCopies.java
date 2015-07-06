@@ -70,4 +70,32 @@ public class BookCopies {
 		result += getNoOfCopies()+" copies";		
 		return result;
 	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + bookId;
+		result = prime * result + branchId;
+		result = prime * result + noOfCopies;
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BookCopies other = (BookCopies) obj;
+		if (bookId != other.bookId)
+			return false;
+		if (branchId != other.branchId)
+			return false;
+		if (noOfCopies != other.noOfCopies)
+			return false;
+		return true;
+	}
+	
+	
 }

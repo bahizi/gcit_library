@@ -32,9 +32,10 @@ public class BookDAO extends BaseDAO<Book>{
 		}
 	}
 	public void update(Book book) throws Exception{
-		save("UPDATE tbl_book SET title = ?, publisherId = ? WHERE bookId = ?",
+		save("UPDATE tbl_book SET title = ?, pubId = ? WHERE bookId = ?",
 				new Object[] { book.getTitle(),book.getPublisher().getPublisherId(),book.getBookId()});
-		
+		GenreDAO genreDAO = new GenreDAO(getConnection());
+		AuthorDAO authorDAO = new AuthorDAO(getConnection());		
 	}
 	public void delete(Book book) throws Exception{
 		save("DELETE FROM tbl_book WHERE bookId = ?", new Object[]{book.getBookId()});

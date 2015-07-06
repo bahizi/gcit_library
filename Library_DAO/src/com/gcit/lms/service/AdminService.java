@@ -106,7 +106,7 @@ public class AdminService extends BaseService{
 			System.out.println("Here are all the books in the system:");
 			Book toDelete = this.showAllBooks();
 			if(toDelete!=null){
-
+				deleteBook(toDelete);
 			}		
 		default:
 			//This should never happen.
@@ -232,6 +232,27 @@ public class AdminService extends BaseService{
 			}
 		case 2:
 			addBookAuthor(book);
+			editBook(book);
+			break;
+		case 3:
+			deleteBookAuthor(book);
+			editBook(book);
+			break;
+		case 4:
+			addBookGenre(book);
+			editBook(book);
+			break;
+		case 5:
+			deleteBookGenre(book);
+			editBook(book);
+			break;
+		case 6:
+			editBookPublisher(book);
+			editBook(book);
+			break;
+		case 7:
+			deleteBookPublisher(book);
+			editBook(book);
 			break;
 		default:
 			System.out.println("Coming soon");
@@ -266,20 +287,17 @@ public class AdminService extends BaseService{
 				else{
 					newAuthors.add(allAuthors.get(author-1));
 					allAuthors.remove(author-1);
-					System.out.println("More authors?");
+					System.out.println("Add more authors?");
 					displayOptions(questions);
 					int next = getInputInt(1,2);
 					more = next ==1;
 				}
-
 			} while (more);
-			List<Author> curAuthors = book.getAuthors();
 			for(Author auth: newAuthors){
-				curAuthors.add(auth);
-
+				bookDAO.save("INSERT INTO tbl_book_authors (bookId,authorId) VALUES(?,?)", new Object[]{book.getBookId(),auth.getAuthorId()});
 			}
-			book.setAuthors(curAuthors);	
-			bookDAO.update(book);
+			conn.commit();
+			
 			conn.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -293,8 +311,8 @@ public class AdminService extends BaseService{
 			conn = getConnection();
 			AuthorDAO authorDAO = new AuthorDAO(conn);
 			BookDAO bookDAO = new BookDAO(conn);
-			List<Author> allAuthors = (List<Author>) authorDAO.read("SELECT * FROM tbl_author WHERE tbl_author.authorId NOT IN (SELECT tbl_book_authors.authorId FROM tbl_book_authors WHERE bookId=?)", new Object[]{book.getBookId()});
-			ArrayList<Author> newAuthors = new ArrayList<Author>();
+			List<Author> allAuthors = (List<Author>) authorDAO.read("SELECT * FROM tbl_author JOIN tbl_book_authors ON tbl_author.authorId = tbl_book_authors.authorId WHERE bookId = ?", new Object[]{book.getBookId()});
+			ArrayList<Author> toDelete = new ArrayList<Author>();
 			ArrayList<String> actions= new ArrayList<String>();
 			actions.add("Cancel");
 
@@ -309,9 +327,9 @@ public class AdminService extends BaseService{
 					more = false;
 				}
 				else{
-					newAuthors.add(allAuthors.get(author-1));
+					toDelete.add(allAuthors.get(author-1));
 					allAuthors.remove(author-1);
-					System.out.println("More authors?");
+					System.out.println("Delete more authors?");
 					displayOptions(questions);
 					int next = getInputInt(1,2);
 					more = next ==1;
@@ -319,12 +337,10 @@ public class AdminService extends BaseService{
 
 			} while (more);
 			List<Author> curAuthors = book.getAuthors();
-			for(Author auth: newAuthors){
-				curAuthors.add(auth);
-
+			for(Author auth: toDelete){
+				authorDAO.save("DELETE FROM tbl_book_authors WHERE authorId = ? AND bookId =?", new Object[]{auth.getAuthorId(),book.getBookId()});
 			}
-			book.setAuthors(curAuthors);	
-			bookDAO.update(book);
+			conn.commit();
 			conn.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -332,8 +348,164 @@ public class AdminService extends BaseService{
 		}
 
 	}
-	private void editBookAuthor(Book book){
-		System.out.println("What to ");
+	private void addBookGenre(Book book){
+		Connection conn;
+		try {
+			conn = getConnection();
+			GenreDAO genreDAO = new GenreDAO(conn);
+			BookDAO bookDAO = new BookDAO(conn);
+			List<Genre> allGenres = (List<Genre>) genreDAO.read("SELECT * FROM tbl_author WHERE tbl_author.authorId NOT IN (SELECT tbl_book_authors.authorId FROM tbl_book_authors WHERE bookId=?)", new Object[]{book.getBookId()});
+			ArrayList<Genre> newGenres = new ArrayList<Genre>();
+			ArrayList<String> actions= new ArrayList<String>();
+			actions.add("Cancel");
+
+			ArrayList<String> questions= new ArrayList<String>();
+			questions.add("Yes");
+			questions.add("No");
+			boolean more = true;			
+			do {
+				System.out.println("Choose Genre");
+				int author = getChoiceNumber (allGenres,actions);
+				if (author == -1){
+					more = false;
+				}
+				else{
+					newGenres.add(allGenres.get(author-1));
+					allGenres.remove(author-1);
+					if(allGenres.isEmpty()){
+						more = false;
+						break;
+						
+					}
+					System.out.println("Add more genres?");
+					displayOptions(questions);
+					int next = getInputInt(1,2);
+					more = next ==1;
+				}
+			} while (more);
+			for(Genre genre: newGenres){
+				bookDAO.save("INSERT INTO tbl_book_genres (bookId,genre_id) VALUES(?,?)", new Object[]{book.getBookId(),genre.getGenreId()});
+			}
+			conn.commit();			
+			conn.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	private void deleteBookGenre(Book book){
+		Connection conn;
+		try {
+			conn = getConnection();
+			GenreDAO authorDAO = new GenreDAO(conn);
+			BookDAO bookDAO = new BookDAO(conn);
+			List<Genre> allGenres = (List<Genre>) authorDAO.read("SELECT * FROM tbl_genre JOIN tbl_book_genres ON tbl_genre.genre_id = tbl_book_genres.genre_id WHERE bookId = ?", new Object[]{book.getBookId()});
+			ArrayList<Genre> toDelete = new ArrayList<Genre>();
+			ArrayList<String> actions= new ArrayList<String>();
+			actions.add("Cancel");
+
+			ArrayList<String> questions= new ArrayList<String>();
+			questions.add("Yes");
+			questions.add("No");
+			boolean more = true;			
+			do {
+				System.out.println("Choose Genre");
+				int genre = getChoiceNumber (allGenres,actions);
+				if (genre == -1){
+					more = false;
+				}
+				else{
+					toDelete.add(allGenres.get(genre-1));
+					allGenres.remove(genre-1);
+					if(allGenres.isEmpty()){
+						more = false;
+						break;
+					}
+					System.out.println("Delete more genres?");
+					displayOptions(questions);
+					int next = getInputInt(1,2);
+					more = next ==1 ;
+				}
+
+			} while (more);
+			List<Author> curAuthors = book.getAuthors();
+			for(Genre genre: toDelete){
+				authorDAO.save("DELETE FROM tbl_book_genres WHERE genre_id = ? AND bookId =?", new Object[]{genre.getGenreId(),book.getBookId()});
+			}
+			conn.commit();
+			conn.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	private void editBookPublisher(Book book){
+		Connection conn;
+		try {
+			conn = getConnection();
+			PublisherDAO pubDAO = new PublisherDAO(conn);
+			BookDAO bookDAO = new BookDAO(conn);
+			Publisher curPublisher = null;
+			List<Publisher> allPublisher = (List<Publisher>) pubDAO.read("SELECT * FROM tbl_publisher WHERE publisherId NOT IN (SELECT pubId FROM tbl_book WHERE bookId = ?)", new Object[] {book.getBookId()});
+			ArrayList<String> actions = new ArrayList<String>();
+			actions.add("Cancel");
+			if(book.getPublisher()==null){
+				List<Publisher> pubs = (List<Publisher>) pubDAO.read("SELECT * FROM tbl_publisher JOIN tbl_book ON tbl_publisher.publisherId = tbl_book.pubId WHERE bookId=?", new Object[]{book.getBookId()});
+				if(pubs !=null & pubs.size()>0){
+					curPublisher = pubs.get(0);
+				}
+			}
+			System.out.println("Pick a new publisher");
+			int choice = getChoiceNumber(allPublisher,actions);
+			if(choice>0 && choice<=allPublisher.size()){
+				book.setPublisher(allPublisher.get(choice-1));
+			}
+			bookDAO.update(book);
+			conn.commit();
+			conn.close();			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		 
+	}
+	private void deleteBookPublisher(Book book){
+		Integer pubId = null;
+		try {
+			Connection conn = getConnection();
+			BookDAO bookDAO = new BookDAO(conn);
+			Publisher curPublisher = book.getPublisher();
+			if(curPublisher==null){
+				curPublisher = new Publisher();				
+			}
+			curPublisher.setPublisherId(pubId);
+			book.setPublisher(curPublisher);
+			bookDAO.update(book);
+			conn.commit();
+			conn.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		
+	}
+	private void deleteBook(Book book){
+		try {
+			Connection conn = getConnection();
+			BookDAO bookDAO = new BookDAO(conn);
+			bookDAO.delete(book);
+			conn.commit();
+			conn.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	private void authorMain(){
 		ArrayList<String> options = new ArrayList<String>();
