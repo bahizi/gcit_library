@@ -13,11 +13,17 @@ import java.util.List;
 
 import com.gcit.lms.dao.AuthorDAO;
 import com.gcit.lms.dao.BookDAO;
+import com.gcit.lms.dao.BookLoanDAO;
+import com.gcit.lms.dao.BorrowerDAO;
 import com.gcit.lms.dao.GenreDAO;
+import com.gcit.lms.dao.LibraryBranchDAO;
 import com.gcit.lms.dao.PublisherDAO;
 import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
+import com.gcit.lms.domain.BookLoan;
+import com.gcit.lms.domain.Borrower;
 import com.gcit.lms.domain.Genre;
+import com.gcit.lms.domain.LibraryBranch;
 import com.gcit.lms.domain.Publisher;
 
 public class AdminService extends BaseService{
@@ -66,7 +72,11 @@ public class AdminService extends BaseService{
 			break;
 		case 6:
 			//manage book loans
-			loanMain();
+			BookLoan loan = getLoan();
+			if(loan!=null){
+				editLoan(loan);
+			}
+			
 			break;
 		default:
 			//this case should never happen. if it does, something is wrong with getInputInt
@@ -107,7 +117,8 @@ public class AdminService extends BaseService{
 			Book toDelete = this.showAllBooks();
 			if(toDelete!=null){
 				deleteBook(toDelete);
-			}		
+			}
+			break;
 		default:
 			//This should never happen.
 			System.err.println("Invalid input.");
@@ -259,9 +270,6 @@ public class AdminService extends BaseService{
 			break;
 
 		}
-
-
-
 	}
 	private void addBookAuthor(Book book){
 		Connection conn;
@@ -297,7 +305,7 @@ public class AdminService extends BaseService{
 				bookDAO.save("INSERT INTO tbl_book_authors (bookId,authorId) VALUES(?,?)", new Object[]{book.getBookId(),auth.getAuthorId()});
 			}
 			conn.commit();
-			
+
 			conn.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -375,7 +383,7 @@ public class AdminService extends BaseService{
 					if(allGenres.isEmpty()){
 						more = false;
 						break;
-						
+
 					}
 					System.out.println("Add more genres?");
 					displayOptions(questions);
@@ -469,8 +477,8 @@ public class AdminService extends BaseService{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		 
+
+
 	}
 	private void deleteBookPublisher(Book book){
 		Integer pubId = null;
@@ -490,9 +498,9 @@ public class AdminService extends BaseService{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
-		
+
+
 	}
 	private void deleteBook(Book book){
 		try {
@@ -505,22 +513,8 @@ public class AdminService extends BaseService{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	}
-	private void authorMain(){
-		ArrayList<String> options = new ArrayList<String>();
-		ArrayList<String> actions = new ArrayList<String>();
-		options.add("Add a new author");
-		options.add("Edit an author's name");
-		options.add("Delete an author");
-		actions.add("Go Back");
-		int choice = this.getChoiceNumber(options, actions);
-
 
 	}
-
-
-
 	private Book showAllBooks( ){
 		Connection conn;
 		Book book = null;
@@ -543,26 +537,181 @@ public class AdminService extends BaseService{
 		return book;
 	}
 
+	private void authorMain(){
+		ArrayList<String> options = new ArrayList<String>();
+		ArrayList<String> actions = new ArrayList<String>();
+		options.add("Add a new author");
+		options.add("Edit an author's name");
+		options.add("Delete an author");
+		actions.add("Go Back");
+		int choice = this.getChoiceNumber(options, actions);
+		switch(choice){
+		case -1:
+			break;
+		case 1:
+			addAuthor();
+			authorMain();
+			break;
+		case 2:
+			Author toEdit = showAllAuthors();
+			if(toEdit!=null){
+				editAuthor(toEdit);	
+			}
+			authorMain();
+			break;
+		case 3: 
+			Author toDelete = showAllAuthors();
+			System.out.println("DELETING "+toDelete);
+			if(toDelete!=null){
+				deleteAuthor(toDelete);	
+			}
+			else{
+				System.out.println("Empty author");
+			}
+			authorMain();
+			break;
+		default:
+			System.err.println("Invalid input");
+			break;		
+		}
+	}
+	private void addAuthor(){
+		System.out.println("Enter new author's name: [N/A to cancel]");
+		String name = getInputString();
+		if(!name.equals("N/A")){
+			Author author = new Author();
+			author.setAuthorName(name);
+			try {
+				Connection conn = getConnection();
+				try{
+					AuthorDAO authorDAO = new AuthorDAO(conn);
+					authorDAO.create(author);
+					conn.commit();
+					conn.close();
+				}
+				catch(Exception e){
+					conn.rollback();
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error while connecting to Database");
+				e.printStackTrace();
+			}
+		}
+	}
+	private Author showAllAuthors(){
+		Author author = null;
+		try {
+			Connection conn = getConnection();
+			AuthorDAO authorDAO = new AuthorDAO(conn);
+			List<Author> allAuthors = authorDAO.readAll();
+			ArrayList<String> actions = new ArrayList<String>();
+			actions.add("Cancel");
+			int choice = getChoiceNumber(allAuthors, actions);
+			if(choice>0 && choice <=allAuthors.size()){
+				author = allAuthors.get(choice-1);
+			}			
+			conn.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return author;
+	}
+
+	private void editAuthor(Author author){
+		try {
+			Connection conn = getConnection();
+			System.out.println("Enter new name for "+author+" :[N/A to cancel]");
+			String name = getInputString();
+			if(!name.equals("N/A")){
+				try{
+					System.out.println("Committed!!!!!!!!!!!!!!!!!!!");
+					AuthorDAO authorDAO = new AuthorDAO(conn);
+					author.setAuthorName(name);
+					authorDAO.update(author);
+					conn.commit();
+					conn.close();
+				}
+				catch(Exception e){
+					conn.rollback();
+					conn.close();
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error while connecting to database");
+			e.printStackTrace();
+		}
+
+	}
+	private void deleteAuthor(Author author){
+		try {
+			Connection conn = getConnection();			
+			try{
+				AuthorDAO authorDAO = new AuthorDAO(conn);
+				BookDAO bookDAO = new BookDAO(conn);
+				List<Book> authorBooks = (List<Book>) bookDAO.read("SELECT * FROM tbl_book WHERE tbl_book.bookId IN (SELECT tbl_book_authors.bookId FROM tbl_book_authors WHERE authorId = ?)" , new Object[] {author.getAuthorId()});
+				if(authorBooks.size()>0){
+					ArrayList<String> answers = new ArrayList<String>();
+					answers.add("No, nevermind");
+					answers.add("Yes, delete this author");
+					System.out.println(author+" has (co)authored "+authorBooks.size()+" books in our records");
+					System.out.println("Are you sure you still want to delete? Some books may remain with no author");
+					displayOptions(answers);
+					int in = getInputInt(1,2);
+					if(in ==1 ){
+						return;
+					}
+				}
+				System.out.println("here");
+				
+				authorDAO.delete(author);
+				conn.commit();
+				conn.close();			
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error while connecting to database");
+			e.printStackTrace();
+		}
+
+	}
 	//diplay the possible effects to a publisher
 	private void publisherMain(){
 		ArrayList<String> options = new ArrayList<String>();
+		options.add("Add new a new publisher");
 		options.add("Edit stored publishers");
-		options.add("Add new publishers");
+		options.add("Delete a publisher");
 		options.add("Go back up the menu");
 		System.out.println("What would like to do with publishers?");
 		displayOptions(options);
 		int action = getInputInt(1,options.size());
 		switch(action){
 		case 1:
-			//edit publishers
-			break;
-		case 2:
 			this.addPublisher();
 			publisherMain();
 			break;
+		case 2:
+			Publisher toEdit = showAllPublishers();
+			if(toEdit!=null){
+				editPublisher(toEdit);
+			}
+			publisherMain();
+			break;
 		case 3:
-			//go back to the admin main menu
-			adminMenu();
+			Publisher toDelete = showAllPublishers();
+			if(toDelete!=null){
+				deletePublisher(toDelete);
+			}
+			publisherMain();
+			break;
 		default:
 			System.err.println("Invalid Input");
 			System.exit(1);
@@ -570,111 +719,275 @@ public class AdminService extends BaseService{
 
 	}
 
-	//gather the necessary information to add a publisher
-	private int addPublisher(){
-		System.out.println("What is the Publisher's name?");
-		String pubName= getInputString();
-		System.out.println("What is the Publisher's address?");
-		String pubAddress=getInputString();
-		System.out.println("What is the Publisher's phone number?");
-		String pubPhone=getInputString();
-		int pubId= insertPublisher(pubName,pubAddress,pubPhone);
-		return pubId;
-	}
-
-	//insert the publisher in the database
-	private int insertPublisher(String name, String address, String phone){
-		int id=-1;
+	private Publisher showAllPublishers(){
+		Publisher pub = null;
 		try {
-			Connection conn= getConnection();
-			PreparedStatement pstmt= conn.prepareStatement("INSERT INTO tbl_publisher (publisherName, publisherAddress, publisherPhone) VALUES(?,?,?)");
-			pstmt.setString(1, name);
-			pstmt.setString(2, address);
-			pstmt.setString(3, phone);
-			pstmt.execute();
-			Statement stmt= conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID() AS newId");
-			if(rs.next()){
-				id= rs.getInt("newId");
-			}	
-
+			Connection conn = getConnection();
+			PublisherDAO pubDAO = new PublisherDAO(conn);
+			List<Publisher> allPublishers = pubDAO.readAll();
+			ArrayList<String> actions = new ArrayList<String>();
+			actions.add("Cancel");
+			int choice = getChoiceNumber(allPublishers, actions);
+			if(choice>0 && choice <=allPublishers.size()){
+				pub = allPublishers.get(choice-1);
+			}			
 			conn.close();
 		} catch (Exception e) {
-			System.err.println("error while connecting to the database");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if(id<0){
-			System.out.println("Failed to Record Publisher.Sorry");
-			System.exit(1);
-		}
-		return id;
-	}
 
+		return pub;
+	}
+	//gather the necessary information to add a publisher
+	private void addPublisher(){
+		try {
+			Connection conn = getConnection();
+			try{
+				PublisherDAO pubDAO = new PublisherDAO(conn);
+				Publisher toAdd = new Publisher();
+				System.out.println("What is the Publisher's name?");
+				String pubName= getInputString();
+				System.out.println("What is the Publisher's address?");
+				String pubAddress=getInputString();
+				System.out.println("What is the Publisher's phone number?");
+				String pubPhone=getInputString();
+				toAdd.setPublisherName(pubName);
+				toAdd.setPublisherAddress(pubAddress);
+				toAdd.setPublisherPhone(pubPhone);
+				pubDAO.create(toAdd);
+				conn.commit();
+				conn.close();				
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+				e.printStackTrace();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
+	}
+	private void editPublisher(Publisher publisher){
+		try {
+			Connection conn = getConnection();
+			System.out.println("Enter Publisher's new name:");
+			String name = getInputString();
+			System.out.println("Enter Publisher's new address:");
+			String address = getInputString();
+			System.out.println("Enter Publisher's new phone:");
+			String phone = getInputString();
+			try{
+				PublisherDAO pubDAO = new PublisherDAO(conn);
+				publisher.setPublisherName(name);
+				publisher.setPublisherAddress(address);
+				publisher.setPublisherPhone(phone);
+				pubDAO.update(publisher);
+				conn.commit();
+				conn.close();
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error while connecting to database");
+			e.printStackTrace();
+		}	
+	}
+	private void deletePublisher(Publisher publisher){
+		try {
+			Connection conn = getConnection();			
+			try{
+				PublisherDAO pubDAO = new PublisherDAO(conn);
+				BookDAO bookDAO = new BookDAO(conn);
+				List<Book> publisherBooks = (List<Book>) bookDAO.read("SELECT * FROM tbl_book WHERE pubId = ?" , new Object[] {publisher.getPublisherId()});
+				if(publisherBooks.size()>0){
+					ArrayList<String> answers = new ArrayList<String>();
+					answers.add("No, nevermind");
+					answers.add("Yes, delete this publisher");
+					System.out.println(publisher+" has published "+publisherBooks.size()+" books in our records");
+					System.out.println("Are you sure you still want to delete? Some books may remain with no publisher");
+					displayOptions(answers);
+					int in = getInputInt(1,2);
+					if(in ==1){
+						return;
+					}					
+					bookDAO.save("UPDATE tbl_book SET pubId = ? WHERE pubId = ?", new Object[]{null, publisher.getPublisherId()});					
+				}
+				pubDAO.delete(publisher);
+				conn.commit();
+				conn.close();			
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error while connecting to database");
+			e.printStackTrace();
+		}
+	}
 	//display the possible effects to a library branch
 	private void libraryBranchMain(){
 		ArrayList<String> options = new ArrayList<String>();
-		options.add("Edit stored libraries");
 		options.add("Add a new Library Branch");
-		options.add("Delete a stored Library Branch");
+		options.add("Edit stored libraries");
+		options.add("Delete a Library Branch");
 		options.add("Go back up the menu");
 		System.out.println("What would like to do with libraries?");
 		displayOptions(options);
 		int action = getInputInt(1,options.size());
 		switch(action){
 		case 1:
-			//edit libraries
-			break;
-		case 2:
 			addLibrary();
 			libraryBranchMain();
 			break;
+		case 2:
+			LibraryBranch toEdit = showAllBranches();
+			if(toEdit!=null){
+				editBranch(toEdit);
+			}
+			libraryBranchMain();
+			break;
 		case 3:
-			//delete library
+			LibraryBranch toDelete = showAllBranches();
+			if(toDelete!=null){
+				deleteBranch(toDelete);
+			}
 			libraryBranchMain();
 			break;
 		case 4:
 			//go back to the admin main menu
 			adminMenu();
+			break;
 		default:
 			System.err.println("Invalid Input");
 			System.exit(1);
 		}
 	}
-
-	//gather the library's information
-	//insert the library in the database
-	private int addLibrary(){
-		int id = -1;
-		System.out.println("Branch Name: ");
-		String name= getInputString();
-		System.out.println("Address: ");
-		String address= getInputString();;
+	
+	private LibraryBranch showAllBranches(){
+		LibraryBranch branch = null;
 		try {
-			Connection conn= getConnection();
-			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tbl_library_branch (branchName, branchAddress) VALUES(?,?)");
-			pstmt.setString(1, name);
-			pstmt.setString(2, address);
-			pstmt.execute();
-			Statement stmt= conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID() AS newId");
-			if(rs.next()){
-				id= rs.getInt("newId");
-			} 
+			Connection conn = getConnection();
+			LibraryBranchDAO libDAO = new LibraryBranchDAO(conn);
+			List<LibraryBranch> allBranches = libDAO.readAll();
+			ArrayList<String> actions = new ArrayList<String>();
+			actions.add("Cancel");
+			int choice = getChoiceNumber(allBranches, actions);
+			if(choice>0 && choice <=allBranches.size()){
+				branch = allBranches.get(choice-1);
+			}			
+			conn.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			//System.err.println("Error while connecting to the database. Sorry");
 		}
 
-		return id;
+		return branch;
 	}
+	
+	private void addLibrary(){
+		try {
+			Connection conn = getConnection();
+			try{
+				LibraryBranchDAO libDAO = new LibraryBranchDAO(conn);
+				LibraryBranch toAdd = new LibraryBranch();
+				System.out.println("What is the new branch's name?");
+				String libName= getInputString();
+				System.out.println("What is the Publisher's address?");				
+				String libAddress=getInputString();
+				toAdd.setBranchName(libName);
+				toAdd.setAddress(libAddress);
+				libDAO.create(toAdd);
+				conn.commit();
+				conn.close();				
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+				e.printStackTrace();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
+	}
+	private void editBranch(LibraryBranch branch){
+		try {
+			Connection conn = getConnection();
+			System.out.println("Enter Branch's new name:");
+			String name = getInputString();
+			System.out.println("Enter Publisher's new address:");
+			String address = getInputString();			
+			try{
+				LibraryBranchDAO libDAO = new LibraryBranchDAO(conn);
+				branch.setBranchName(name);
+				branch.setAddress(address);
+				libDAO.update(branch);
+				conn.commit();
+				conn.close();
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error while connecting to database");
+			e.printStackTrace();
+		}	
+	}
+	private void deleteBranch(LibraryBranch branch){
+		try {
+			Connection conn = getConnection();			
+			try{
+				LibraryBranchDAO libDAO = new LibraryBranchDAO(conn);
+				BookLoanDAO loanDAO = new BookLoanDAO(conn);
+				List<BookLoan> branchLoans = (List<BookLoan>) loanDAO.read("SELECT * FROM tbl_book_loans WHERE branchId = ? AND dateIn IS NULL" , new Object[] {branch.getBranchId()});
+				if(branchLoans.size()>0){
+					ArrayList<String> answers = new ArrayList<String>();
+					answers.add("No, nevermind");
+					answers.add("Yes, delete this branch");
+					System.out.println("This branch has "+branchLoans.size()+" books that are not returned");
+					System.out.println("Are you sure you still want to delete? These books will be lost");
+					displayOptions(answers);
+					int in = getInputInt(1,2);
+					if(in ==1){
+						return;
+					}										
+				}
+				libDAO.delete(branch);
+				conn.commit();
+				conn.close();			
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error while connecting to database");
+			e.printStackTrace();
+		}
+	}
+
 
 	//display the possible actions on a borrower
 	//let the user choose an action and then call the appropriate method
 	//when done, display this menu again, unless user chooses to exit
 	private void borrowerMain(){
 		ArrayList<String> options = new ArrayList<String>();
-		options.add("Edit stored borrowers");
 		options.add("Register a new borrower");
+		options.add("Edit stored borrowers");
 		options.add("Delete a stored borrower");
 		options.add("Go back up the menu");
 		System.out.println("What would like to do with borrowers?");
@@ -682,16 +995,23 @@ public class AdminService extends BaseService{
 		int action = getInputInt(1,options.size());
 		switch(action){
 		case 1:
-			//TODO: Edit borrowers and come back to the menu
-			borrowerMain();
-			break;
-		case 2:
 			addBorrower();
 			borrowerMain();
 			break;
-		case 3:
-			//delete borrowers;
+		case 2:
+			Borrower toEdit = showAllBorrowers();
+			if(toEdit!=null){
+				editBorrower(toEdit);
+			}
 			borrowerMain();
+			break;
+		case 3:
+			Borrower toDelete = showAllBorrowers();
+			if(toDelete!=null){
+				editBorrower(toDelete);
+			}
+			borrowerMain();
+			break;			
 		case 4:
 			//go back to the admin main menu
 			adminMenu();
@@ -700,133 +1020,197 @@ public class AdminService extends BaseService{
 			System.exit(1);
 		}
 	}
-
-	//gather the borrower's information
-	private int addBorrower(){
-		int id = -1;
-		System.out.println("Name: ");
-		String name= getInputString();
-		System.out.println("Address: ");
-		String address= getInputString();
-		System.out.println("Phone: ");
-		String phone= getInputString();
+	
+	private Borrower showAllBorrowers(){
+		Borrower bor = null;
 		try {
-			Connection conn= getConnection();
-			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO tbl_borrower (name, address, phone) VALUES(?,?,?)");
-			pstmt.setString(1, name);
-			pstmt.setString(2, address);
-			pstmt.setString(3, phone);
-			pstmt.execute();
-			Statement stmt= conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID() AS newId");
-			if(rs.next()){
-				id= rs.getInt("newId");
-			} 
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.err.println("Error while connecting to the database. Sorry");
-		}
-		return id;		
-	}
-
-	private Book pickBook(){
-		Book book = null;
-		Connection conn;
-		try {
-			conn = getConnection();
-			BookDAO bookDAO = new BookDAO(conn);
-			List<Book> books = bookDAO.readAll();
+			Connection conn = getConnection();
+			BorrowerDAO borDAO = new BorrowerDAO(conn);
+			List<Borrower> allBorrowers = borDAO.readAll();
 			ArrayList<String> actions = new ArrayList<String>();
 			actions.add("Cancel");
-			int b = getChoiceNumber(books,actions);
-			if(b>0 && b<=books.size()){
-				book = books.get(b-1);
-			}
+			int choice = getChoiceNumber(allBorrowers, actions);
+			if(choice>0 && choice <=allBorrowers.size()){
+				bor = allBorrowers.get(choice-1);
+			}			
 			conn.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-
-		return book;
+		return bor;
 	}
-	//display the possible effects on a book loan
-	private void loanMain(){
-		System.out.println("Which library processed the loan?");
+
+	private void addBorrower(){
 		try {
 			Connection conn = getConnection();
-			PreparedStatement pstmt= conn.prepareStatement("SELECT branchName, branchId FROM tbl_library_branch");
-			ArrayList<String> branches= new ArrayList<String>();
-			ArrayList<Integer> branchIds= new ArrayList<Integer>();
-			ResultSet rs= pstmt.executeQuery();
-
-			while(rs.next()){
-				branches.add(rs.getString("branchName"));
-				branchIds.add(rs.getInt("branchId"));
+			try{
+				BorrowerDAO borDAO = new BorrowerDAO(conn);
+				Borrower toAdd = new Borrower();
+				System.out.println("What is the borrower's name?");
+				String borName= getInputString();
+				System.out.println("What is the borrower's address?");				
+				String borAddress=getInputString();
+				System.out.println("What is the borrower's phone address?");				
+				String borPhone=getInputString();
+				toAdd.setName(borName);
+				toAdd.setAddress(borAddress);
+				toAdd.setPhone(borPhone);
+				borDAO.create(toAdd);
+				conn.commit();
+				conn.close();				
 			}
-			branches.add("Go Back");
-			System.out.println("Pick a branch you want to check out from");
-			displayOptions(branches);
-			int choice=getInputInt(1,branches.size());
-			int branchId;
-			if(choice<branches.size()){
-				branchId=branchIds.get(choice-1);
-				System.out.println("What is the user's card number?");
-				int cardNumber= getInputInt(1,10000);
-				//TODO check if that user actually exists in the database
-				pstmt = conn.prepareStatement("SELECT title, dueDate, tbl_book.bookId FROM tbl_book JOIN tbl_book_loans ON tbl_book.bookId=tbl_book_loans.bookId WHERE branchId = ?  AND cardNo = ? AND dateIn IS NULL");
-				pstmt.setInt(1, branchId);
-				pstmt.setInt(2, cardNumber);			
-				rs = pstmt.executeQuery();
-				ArrayList<String> books= new ArrayList<String>();
-				ArrayList<Integer> ids= new ArrayList<Integer>();
-				while(rs.next()){
-					books.add(rs.getString("title")+" \tdue on "+rs.getString("dueDate"));
-					ids.add(rs.getInt("bookId"));
-				}
-				if(books.size()>0){
-					books.add("Cancel Operation");
-					System.out.println("Pick the book for which you would like to extend the due date");
-					displayOptions(books);
-					int book= getInputInt(1, books.size());
-					if(book<books.size()){
-						updateBookLoan(branchId, cardNumber,ids.get(book-1));
-						this.adminMenu();
-					}
-					else{
-						System.out.println("Returning to the menu up");
-					}
-				}
-				else{
-					System.out.println("Sorry, this user has no unreturned books for this library");
-					System.out.println("*********************************************************");
-					loanMain();
-				}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+				e.printStackTrace();
 			}
-
-			else{
-				System.out.println("Going up the menu");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
+	}
+	private void editBorrower(Borrower bor){
+		try {
+			Connection conn = getConnection();
+			System.out.println("Enter new name: [N/A to skip]");
+			String name = getInputString();
+			System.out.println("Enter new address: [N/A to skip]");
+			String address = getInputString();			
+			System.out.println("Enter new phone: [N/A to skip]");
+			String phone = getInputString();	
+			if(!name.equals("N/A")){
+				bor.setName(name);
+			}
+			if(!address.equals("N/A")){
+				bor.setAddress(address);
+			}
+			if(!phone.equals("N/A")){
+				bor.setPhone(phone);
+			}
+			
+			try{
+				BorrowerDAO borDAO = new BorrowerDAO(conn);
+				borDAO.update(bor);				
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
 			}
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			System.err.println("Error while connecting to database");
 			e.printStackTrace();
-		}		
+		}	
+	}
+	private void deleteBorrower(Borrower bor){
+		try {
+			Connection conn = getConnection();			
+			try{
+				BorrowerDAO borDAO = new BorrowerDAO(conn);
+				BookLoanDAO loanDAO = new BookLoanDAO(conn);
+				List<BookLoan> branchLoans = (List<BookLoan>) loanDAO.read("SELECT * FROM tbl_book_loans WHERE cardNo = ? AND  dateIn IS NULL)" , new Object[] {bor.getCardNo()});
+				if(branchLoans.size()>0){
+					ArrayList<String> answers = new ArrayList<String>();
+					answers.add("No, nevermind");
+					answers.add("Yes, delete this branch");
+					System.out.println("This user has "+branchLoans.size()+" books that are not returned");
+					System.out.println("Are you sure you still want to delete? These books will be lost");
+					displayOptions(answers);
+					int in = getInputInt(1,2);
+					if(in ==1){
+						return;
+					}										
+				}
+				borDAO.delete(bor);
+				conn.commit();
+				conn.close();			
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error while connecting to database");
+			e.printStackTrace();
+		}
+	}
+
+	//display the possible effects on a book loan
+	private BookLoan getLoan(){
+		System.out.println("Which library processed the loan?");
+		LibraryBranch branch = this.showAllBranches();
+		Borrower bor = new Borrower();
+		Book book = new Book();
+		BookLoan loan =null;
+		try {
+			Connection conn = getConnection();
+			try{
+				LibraryBranchDAO libDAO = new LibraryBranchDAO(conn);
+				BookLoanDAO bookLoanDAO = new BookLoanDAO(conn);
+				BorrowerDAO borDAO = new BorrowerDAO(conn);
+				BookDAO bookDAO = new BookDAO(conn);
+				ArrayList<String> actions = new ArrayList<String>();
+				actions.add("Cancel");
+				if(branch!= null){
+					Borrower borrower = null;
+					System.out.println("What is the user's card number? [0 to cancel]");
+					do{
+						int card = getInputInt (0,10000);
+						if(card==0){
+							break;
+							
+						}
+						bor = borDAO.readOne(card);		
+						if(bor == null){
+							System.out.println("Invalid card number.try again.");
+						}
+					}
+					while(bor == null);
+					if(bor!=null){
+						String sql = "SELECT * FROM tbl_book WHERE tbl_book.bookId IN (SELECT tbl_book_loans.bookId FROM tbl_book_loans WHERE branchId = ? AND cardNo =? AND dateIn IS NULL )";
+						List<Book> books = (List<Book>) bookDAO.read(sql, new Object[]{branch.getBranchId(),bor.getCardNo()});
+						System.out.println("Which book?");
+						int choice = getChoiceNumber(books,actions);
+						if(choice>0 && choice<=books.size()){
+							book = books.get(choice-1);
+							loan = bookLoanDAO.readOne(book.getBookId(), branch.getBranchId(), bor.getCardNo());							
+						}
+					
+					}
+				}
+				
+			}
+			catch(Exception e){
+				conn.rollback();
+				conn.close();
+				e.printStackTrace();
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return loan;
 	}
 	//update the book loan in the database
 	//doesnt allow past times and times beyond a week from now
-	private void updateBookLoan(int branchId, int cardNumber, Integer bookId) {
+	private void editLoan(BookLoan loan){
 		//credit to stackoverflow for the date validation: http://stackoverflow.com/questions/2149680/regex-date-format-validation-on-java	
 		boolean validDate= false;
 		String newDate;
 		Date today;
 		Date parsedDate =new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
 		do{
-			System.out.println("Please put in the new due date [dd/mm/yyyy]");
+			System.out.println("Please put in the new due date [yyyy/mm/dd]");
 			newDate= getInputString();
-			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+			
+			
 			try {
 				today= new Date();
 				parsedDate=format.parse(newDate);
@@ -846,14 +1230,18 @@ public class AdminService extends BaseService{
 				validDate=false;
 			}	
 		}while(!validDate);
+		loan.setDueDate(format.format(parsedDate));
 		try {
 			Connection conn = getConnection();
-			PreparedStatement pstmt= conn.prepareStatement("UPDATE tbl_book_loans SET dueDate = ? WHERE branchId= ? AND bookId=? AND cardNo = ?");
-			pstmt.setTimestamp(1, new Timestamp(parsedDate.getTime()));
-			pstmt.setInt(2, branchId);
-			pstmt.setInt(3, bookId);
-			pstmt.setInt(4, cardNumber);
-			pstmt.execute();
+			try{
+				BookLoanDAO loanDAO = new BookLoanDAO(conn);
+				loanDAO.update(loan);	
+				conn.commit();
+				conn.close();
+			} catch(Exception e){
+				conn.rollback();
+				conn.close();
+			}			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

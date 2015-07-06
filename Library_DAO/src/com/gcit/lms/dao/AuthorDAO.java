@@ -31,6 +31,7 @@ public class AuthorDAO extends BaseDAO<Author> {
 	public void delete(Author author) throws Exception {
 		save("DELETE FROM tbl_author WHERE authorId = ?",
 				new Object[] { author.getAuthorId() });
+		System.out.println("Deleted "+author );
 	}
 
 	public List<Author> readAll() throws Exception{

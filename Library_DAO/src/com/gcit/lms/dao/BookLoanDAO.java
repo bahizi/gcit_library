@@ -15,7 +15,7 @@ public class BookLoanDAO extends BaseDAO<BookLoan>{
 		save("INSERT INTO tbl_book_loans (bookId,branchId,cardNo,dateOut,dueDate, dateIn) VALUES(?,?,?,?,?,?)", new Object[]{bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(),bookLoan.getDateOut(),bookLoan.getDueDate(), bookLoan.getDateIn()});		
 	}
 	public void update(BookLoan bookLoan) throws Exception{
-		save("UPDATE tbl_book_loans SET dateIn = ? WHERE  bookId = ? AND branchId =? AND cardNo = ? AND dateOut = ? ", new Object[]{bookLoan.getDateIn(),bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(), bookLoan.getDateOut()});		
+		save("UPDATE tbl_book_loans SET dateIn = ?, dueDate = ? WHERE  bookId = ? AND branchId =? AND cardNo = ? AND dateOut = ? ", new Object[]{bookLoan.getDateIn(),bookLoan.getDueDate(),bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(), bookLoan.getDateOut()});		
 	}
 	public void delete(BookLoan bookLoan) throws Exception{
 		save("DELETE FROM tbl_book_loans WHERE bookId = ? AND branchId = ? AND cardNo = ? AND dateOut = ?",new Object[]{bookLoan.getBookId(),bookLoan.getBranchId(),bookLoan.getCardNo(), bookLoan.getDateOut()});		
