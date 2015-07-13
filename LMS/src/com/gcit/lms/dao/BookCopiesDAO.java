@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.BookCopies;
 
 public class BookCopiesDAO extends BaseDAO<BookCopies>{
@@ -52,5 +53,19 @@ public BookCopiesDAO(Connection conn) throws Exception {
 			copies.add(copy);
 		}		
 		return copies;
+	}
+	@Override
+	public List<BookCopies> readPage(int pageNum) throws Exception {
+		int start = 0;
+		if(pageNum>1){
+			start = (pageNum*10)+1;			 
+		}		
+		List<BookCopies> result = (List<BookCopies>) read("SELECT * FROM tbl_book_copies LIMIT ?,10", new Object[] {start});
+		return result;	
+	}
+	@Override
+	public List<BookCopies> search(String query, int pageNum) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

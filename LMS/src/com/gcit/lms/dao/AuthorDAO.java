@@ -40,16 +40,43 @@ public class AuthorDAO extends BaseDAO<Author> {
 		return result;
 		
 	}
+	public List<Author> readPage(int pageNum) throws Exception{
+		int start = 0;
+		if(pageNum != 0){
+			start = (pageNum*10);
+			
+		}		
+		List<Author> result = (List<Author>) read("SELECT * FROM tbl_author ORDER BY authorName ASC LIMIT ?,10", new Object[] {start});
+		return result;
+		
+	}
 
 	public Author readOne(int authorId) throws Exception {
 		@SuppressWarnings("unchecked")
-		List<Author> authors = (List<Author>) read("SELECT * FROM tbl_author", new Object[] {authorId});
+		List<Author> authors = (List<Author>) read("SELECT * FROM tbl_author WHERE authorId = ?", new Object[] {authorId});
 		if(authors!=null && authors.size()>0){
 			return authors.get(0);
 		}
 		return null;
 	}
-
+	@Override
+	public List<Author> search(String query, int pageNum) throws Exception{
+		int start = 0;
+		if(pageNum != 0){
+			start = (pageNum*10);
+			
+		}
+		String s = "%"+query+"%";
+		List<Author> authors = (List<Author>) read("SELECT * FROM tbl_author WHERE authorName LIKE ?  ORDER BY authorName LIMIT ?, 10", new Object[] {s, start});
+		
+		return authors;
+		
+	}
+	public int getPageCount(String query) throws Exception{
+		String s = "%"+query+"%";
+		List<Author> authors = (List<Author>) read("SELECT * FROM tbl_author WHERE authorName LIKE ? ", new Object[] {s});
+		return Math.abs((authors.size()-1)/10 +1);
+	}
 	@Override
 	public List<Author> extractData(ResultSet rs) throws Exception {
 		List<Author> authors =  new ArrayList<Author>();
@@ -73,8 +100,7 @@ public class AuthorDAO extends BaseDAO<Author> {
 		while(rs.next()){
 			Author a = new Author();
 			a.setAuthorId(rs.getInt("authorId"));
-			a.setAuthorName(rs.getString("authorName"));
-			
+			a.setAuthorName(rs.getString("authorName"));			
 			authors.add(a);
 		}
 		return authors;
