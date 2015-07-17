@@ -9,11 +9,12 @@ $( document ).ready(function() {
 		$(".active").removeClass("active");		
 		$(this).addClass("active");
 		view = $(this).find("a").attr("class");
+		console.log("view :"+view);
 		$("#myTable").empty();
 		curPage = 1;
 		searchString = "";
 		searchMain(searchString,curPage-1);	
-		
+		alert($("#addNew").attr("href"));		
 		
 	});
 	
@@ -22,7 +23,8 @@ $( document ).ready(function() {
 	
 	$('#addNewButton').click(function(e){
 		event.preventDefault();
-		goToAddPage();
+		//goToAddPage();
+		$('#addNew').click();
 		
 	});
 	
@@ -66,7 +68,7 @@ $( document ).ready(function() {
 	
 });
 function search(query, pageNum,searchURL,display){
-	console.log("Searching page #" +pageNum);
+//	console.log("Searching page #" +pageNum);
 	$.ajax({
 		  url: searchURL,
 		  type: 'POST',
@@ -80,7 +82,7 @@ function search(query, pageNum,searchURL,display){
 			$("#myTable").empty();
 			display(JSONData[0]);
 			console.log("updated pagecount to "+pageCount);
-			displayPagination();
+			//displayPagination();
 			console.log("Query: '"+query +"' in "+ view +"; "+pageCount+"  pages. CurPage = "+curPage );
 		});
 	
@@ -110,29 +112,37 @@ function goToAddPage(){
 }
 function searchMain( query, pageNum){
 	if (view === "viewAuthors"){
+		$("#addNew").attr('href', "addAuthor.jsp");
 		  search(query,pageNum,"searchAuthors",displayAuthors);
 			
 		}
 		else if(view ==="viewBooks"){
+			$("#addNew").attr('href', "addBook.jsp");
 			search(query,pageNum,"searchBooks",displayBooks);
 			$('#searchString').val("");
 		}
 		
 		else if(view ==="viewBorrowers"){
+			$("#addNew").attr('href', "addBorrower.jsp");
 			search(query,pageNum,"searchBorrowers",displayBorrowers);	
 		}
 		else if(view ==="viewLibraries"){
+			$("#addNew").attr('href', "addBranch.jsp");
 			search(query,pageNum,"searchLibraries",displayLibraries);
 		}
 		else if(view ==="viewPublishers"){
+			$("#addNew").attr('href', "addPublisher.jsp");
 			search(query,pageNum,"searchPublishers",displayPublishers);
 		}
 		else if(view ==="viewGenres"){
+			$("#addNew").attr('href', "addGenre.jsp");
 			search(query,pageNum,"searchGenres",displayGenres);				
 		}	
 	
 }
 function displayAuthors(data){
+$("#addNew").attr('href', "addAuthor.jsp");
+
 var table = $("#myTable");
 var header= document.createElement("tr");
 header.innerHTML = "<th>Author Id</th><th> Author Name</th><th></th>";
@@ -146,7 +156,7 @@ for(i= 0; i<data.length; i++){
 			"<ul>" +
 			"<li class='dropdown'><a class='dropdown-toggle' data-toggle='dropdown' href='#' aria-expanded='false'> Action <span class='caret'></span></a>	" +
 			"<ul class='dropdown-menu'>" +
-			"<li><a data-toggle='modal' data-target='#myModal1' href='editAuthor.jsp?id="+id+"'>Edit</a></li>" +
+			"<li><a data-toggle='modal' data-target='#myModal1' href='addBook.jsp?id="+id+"'>Edit</a></li>" +
 			"<li><a href='deleteAuthor.jsp?id="  +id+"'>Delete</a></li>" +
 			"</ul></li></ul>" +
 			"</td>";			
@@ -175,6 +185,7 @@ function getDisplayText(info,field){
 	}	
 }
 function displayBooks(data){
+	$("#addNew").attr('href', "addBook.jsp");
 	var table = $("#myTable");
 	var header= document.createElement("tr");
 	header.innerHTML = "<th>Id</th><th> Title</th><th>Author</th><th>Publisher</th><th>Genre</th><th><th></th>";
@@ -213,6 +224,8 @@ function displayBooks(data){
 	}
 
 function displayBorrowers(info){
+	//$("#addNew").href = "addAuthor.jsp";
+	$("#addNew").attr('href', "addBorrower.jsp");
 	var table = $("#myTable");
 	var header= document.createElement("tr");
 	header.innerHTML = "<th>ID</th><th>Name</th><th>Address</th><th>Phone</th><th><th></th>";
@@ -240,6 +253,7 @@ function displayBorrowers(info){
 	}	
 }
 function displayLibraries(info){
+	$("#addNew").attr('href', "addBranch.jsp");
 	var table = $("#myTable");
 	var header= document.createElement("tr");
 	header.innerHTML = "<th>ID</th><th>Name</th><th>Address</th><th></th>";
@@ -266,6 +280,7 @@ function displayLibraries(info){
 	}	
 }
 function displayPublishers(info){
+	$("#addNew").attr('href', "addPublisher.jsp");
 	var table = $("#myTable");
 	var header= document.createElement("tr");
 	header.innerHTML = "<th>ID</th><th>Name</th><th>Address</th><th>Phone</th><th></th>";
@@ -293,6 +308,7 @@ function displayPublishers(info){
 	}
 }
 function displayGenres(info){
+	$("#addNew").attr('href', "addGenre.jsp");
 	var table = $("#myTable");
 	var header= document.createElement("tr");
 	header.innerHTML = "<th>ID</th><th>Name</th><th></th>";

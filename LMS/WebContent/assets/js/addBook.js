@@ -118,9 +118,8 @@ $( document ).ready(function() {
 	});
 	
 	$('#searchAuthor').bind('input', function() { 
-	    console.log($('#searchAuthor .searchString').val());
+		view = "viewAuthors";
 	    searchString = $('#searchAuthor .searchString').val();
-	    view = "viewAuthors";
 	    curPage = 1;
 	    search(searchString, curPage-1,"searchAuthors",displayAuthors);
 	});
@@ -128,8 +127,7 @@ $( document ).ready(function() {
 		view = "viewGenres";
 		searchString = $('#searchGenre .searchString').val();	
 		curPage = 1;
-		search(searchString, curPage-1,"searchGenres",displayGenres);
-		console.log(searchString);
+		search(searchString, curPage-1,"searchGenres",displayGenres);		
 	});
 	
 	$('#searchPublisher').bind('input', function() { 

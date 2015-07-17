@@ -1,20 +1,13 @@
 <%@include file="main.html"%>
-${result}
 <div class="container">
 	<div class="well bs-component">
-
 		<div class="row">
 			<div class="col-lg-8 col-sm-offset-2">
-
 				<form id="searchBox" action="/search" method="post">
-					<div class="input-group">
-					
-						<input id="searchString" type="text" class="form-control"
-							placeholder="Search" autofocus /> <span class="input-group-btn">
+					<div class="input-group">					
+						<input id="searchString" type="text" class="form-control" placeholder="Search" autofocus /> <span class="input-group-btn">
 							<button id="searchButton" class="btn btn-default" type="button">
-								<span class="glyphicon glyphicon-search"></span> Search
-							</button>
-						</span>
+								<span class="glyphicon glyphicon-search"></span> Search	</button></span>
 					</div>
 				</form>
 			</div>
@@ -31,13 +24,12 @@ ${result}
 				<li role="presentation"><a class="viewGenres" href="#">Genres</a></li>
 				<li role="presentation"><a class="viewLoans" href="#">Loans</a></li>
 			</ul>
-
 		</div>
-
-		<span class="input-group-btn">
+<a id="addNew" data-toggle='modal' data-target="#myModal1" href="addAuthor.jsp?id=1" style="display: none"></a>
+		<span class="input-group-btn">		
 			<button id="addNewButton" class="btn btn-primary" type="button">
 				<span class="glyphicon glyphicon-plus"></span> Add New
-			</button>
+			</button>			
 		</span> <br>
 		<table id="myTable" class="table table-striped table-hover">
 		</table>
@@ -65,34 +57,5 @@ ${result}
 		</div>
 	</div>
 </div>
-
-
-
-<script type="text/javascript">
-	jQuery(function($) {
-		$('.panel-heading span.clickable')
-				.on(
-						"click",
-						function(e) {
-							if ($(this).hasClass('panel-collapsed')) {
-								// expand the panel
-								$(this).parents('.panel').find('.panel-body')
-										.slideDown();
-								$(this).removeClass('panel-collapsed');
-								$(this).find('i').removeClass(
-										'glyphicon-chevron-down').addClass(
-										'glyphicon-chevron-up');
-							} else {
-								// collapse the panel
-								$(this).parents('.panel').find('.panel-body')
-										.slideUp();
-								$(this).addClass('panel-collapsed');
-								$(this).find('i').removeClass(
-										'glyphicon-chevron-up').addClass(
-										'glyphicon-chevron-down');
-							}
-						});
-	});
-</script>
-
 <script src="./assets/js/admin.js"></script>
+<!-- <script src="./assets/js/addBook.js"></script> -->
