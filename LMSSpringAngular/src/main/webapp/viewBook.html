@@ -1,0 +1,46 @@
+<div class="container theme-showcase" ng-controller="previewCtrl"
+	role="main">
+
+	<!-- Main jumbotron for a primary marketing message or call to action -->
+	<div class="jumbotron">
+		<div class="row">
+			<div class="col-xs-6 col-md-3">
+				<a class="thumbnail"> <img alt="thumbnail"
+					style="height: 350px; display: block;" src={{thumbnail}}
+					data-holder-rendered="true">
+				</a>
+
+
+			</div>
+			<div class="col-xs-6">
+				<h3>{{title}}</h3>
+				<h5> by <span style="font-weight:bold">{{authors}}</span></h5>
+				<div ng-bind-html="description | sanitize"></div>
+			</div>
+			
+			<div class="well col-xs-6 col-md-3">
+				<h3 id="title">{{title}}</h3>
+				<span><span style="font-weight:bold" id="authors">Author(s): </span>{{authors}}</span><br>
+				<span><span style="font-weight:bold" id="publisher">Publisher: </span> {{publisher}}</span><br>
+				<span><span style="font-weight:bold" id="genre">Genre(s): </span>{{genres}}</span><br>
+				 <span><span id="genre">{{pageCount}}</span> pages</span><br>
+				<p>
+					<span ng-repeat="a in [1,2,3,4,5]" class={{getStarCount(a,stars)}}></span>
+					{{stars}} stars
+				</p>
+
+
+				<button ng-if ="canBorrow" 	id = "borrow" class="btn btn-primary" >Borrow Book</button>
+				<button ng-if ="canReturn" 	id = "borrow" class="btn btn-primary" >Return Book</button>
+
+			</div>
+			<span>* Google Books data is used to complement our database</span>
+
+
+		</div>
+		<div class="row"></div>
+	</div>
+
+
+
+</div>

@@ -1,19 +1,13 @@
-<%@include file="main.html"%>
 
-<div class="container">
-
-	<div class="row row-centered">
-		<div class="col-lg-12 col-centered">
-			<div class="page-header">
-				<h1 id="forms">GCIT Library: Add a Publisher</h1>
-			</div>
+<div class="row row-centered">
+	<div class="col-lg-12 col-centered">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">×</button>
+			<h4 class="modal-title">Add/Edit an Publisher</h4>
 		</div>
-	</div>
-
-
-	<div class="row row-centered">
-		<div class="col-lg-6 col-centered">
-			<div class="well bs-component">
+		<div class="modal-body">
+			<div class="well col-lg-8 col-centered col-lg-offset-2">
 				<form class="form-horizontal" action="addPublisher" method="post">
 					<fieldset>
 						<legend>Publisher's details</legend>
@@ -29,7 +23,7 @@
 							<div class="col-lg-10">
 								<input type="text" class="form-control" name="publisherAddress"
 									id="inputAddress" placeholder="Address">
-									
+
 							</div>
 						</div>
 						<div class="form-group">
@@ -41,7 +35,8 @@
 						</div>
 						<div class="form-group">
 							<div class="col-lg-10 col-lg-offset-2">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">Close</button>
 								<button type="submit" class="btn btn-primary">Submit</button>
 							</div>
 						</div>
@@ -50,6 +45,7 @@
 			</div>
 		</div>
 	</div>
+</div>
 
 
 

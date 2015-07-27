@@ -1,0 +1,30 @@
+<div ng-controller="authorCtrl">
+<nav>
+	<ul class="pagination">
+		<li><a href="pageAuthors?pageNo=1">1</a></li>
+		<li><a href="pageAuthors?pageNo=2">2</a></li>
+	</ul>
+</nav>
+<table class="table">
+	<tr>
+		<th>Author Name</th>
+		<th></th>
+		
+	</tr>
+
+	<tr ng-repeat="a in authors">
+		<td>{{a.authorName}}</td>		
+		<td><button class="btn btn-success"
+				href="editAuthor.jsp?authorIdToEdit"
+				data-target="#myModal1" data-toggle="modal">Edit</button></td>
+		<td><button class="btn btn-danger"
+				onclick="javascript:location.href='deleteAuthor?authorId';">Delete</button></td>
+	</tr>
+</table>
+
+<div id="myModal1" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content"></div>
+	</div>
+</div>
+</div>

@@ -1,20 +1,13 @@
-<%@include file="main.html"%>
-
-<div class="container">
-
-	<div class="row row-centered">
-		<div class="col-lg-12 col-centered">
-			<div class="page-header">
-				<h1 id="forms">GCIT Library: Add a Library Branch</h1>
-			</div>
+<div class="row row-centered">
+	<div class="col-lg-12 col-centered">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">×</button>
+			<h4 class="modal-title">Add/Edit a Library Branch</h4>
 		</div>
-	</div>
-
-
-	<div class="row row-centered">
-		<div class="col-lg-6 col-centered">
-			<div class="well bs-component">
-				<form class="form-horizontal" action="addBorrower" method="post">
+		<div class="modal-body">
+			<div class="well col-lg-8 col-centered col-lg-offset-2">
+				<form class="form-horizontal" action="addBranch" method="post">
 					<fieldset>
 						<legend>Library's details</legend>
 						<div class="form-group">
@@ -29,12 +22,13 @@
 							<div class="col-lg-10">
 								<input type="text" class="form-control" name="borAddress"
 									id="inputAddress" placeholder="Address">
-									
+
 							</div>
-						</div>						
+						</div>
 						<div class="form-group">
 							<div class="col-lg-10 col-lg-offset-2">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">Close</button>
 								<button type="submit" class="btn btn-primary">Submit</button>
 							</div>
 						</div>
@@ -43,6 +37,7 @@
 			</div>
 		</div>
 	</div>
+</div>
 
 
 

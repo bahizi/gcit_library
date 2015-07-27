@@ -16,9 +16,7 @@
 		<div class="modal-body">
 			<form class="form-horizontal modForm" action="editAuthor"
 				method="post">
-				<fieldset>
-					<legend><%=author.getAuthorName()%></legend>
-					<div class="form-group">
+				<div class="form-group">
 						<label for="inputName" class="col-lg-2 control-label">Name</label>
 						<div class="col-lg-10">
 
@@ -30,7 +28,7 @@
 						</div>
 
 					</div>
-				</fieldset>
+				
 			</form>
 		</div>
 		<div class="modal-footer">

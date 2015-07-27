@@ -31,8 +31,8 @@
 			</div>
 			<div class="navbar-collapse collapse" id="navbar-main">
 				<ul class="nav navbar-nav">
-				<li> <a href="admin.jsp">Borrower</a></li>
-				<li> <a href="admin.jsp">Librarian</a></li>
+				<li> <a data-toggle='modal' data-target="#myModal1" href="userLogin.jsp">Borrower</a></li>
+				<li> <a  data-toggle='modal' data-target="#myModal1" href="librarianLogin.jsp">Librarian</a></li>
 				<li> <a href="admin.jsp">Administrator</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
@@ -43,6 +43,20 @@
 			</div>
 		</div>
 	</div>
+	<div class = "view-container">
+	<section data-ng-view = "" id="content" class = "animate-fade-up"> </section> 
+	</div>
+	<div class="row row-centered">
+	<div class="col-lg-3">
+		<div id="myModal1" class="modal fade" tabindex="-1" role="dialog"
+			aria-labelledby="myLargeModalLabel">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+	
 	<script src="./main_files/jquery-1.10.2.min.js"></script>
 	<script src="./main_files/bootstrap.min.js"></script>
 	<script src="./main_files/bootswatch.js"></script>

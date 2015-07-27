@@ -17,11 +17,10 @@
 			<h4 class="modal-title">Add/Edit a Book</h4>
 		</div>
 		<div class="modal-body">
-			<div class="col-lg-6 col-centered">
-				<form class="form-horizontal" action="" id="addBookForm"
-					method="post">
-					<fieldset>
-						<legend>Enter book's Details</legend>
+		<div class ="row">
+			<div class="well col-lg-6 col-centered">
+				<form class="form-horizontal" action="" id="addBookForm" method="post">
+					
 						<div class="form-group">
 							<label for="inputName" class="col-lg-2 control-label">Title</label>
 							<div class="col-lg-10">
@@ -63,14 +62,12 @@
 								<button type="submit" class="btn btn-primary">Save Changes</button>
 							</div>
 						</div>
-					</fieldset>
+					
 				</form>
 			</div>
 
 			<div class="col-lg-6 col-centered">
-			<legend>Suggestions</legend>
-				<div class="well bs-component">
-				
+				<div class="bs-component">				
 					<table id="selectTable" class="table table-striped table-hover">
 
 					</table>
@@ -78,12 +75,13 @@
 						<div class="col-lg-4 col-lg-offset-4">
 							<div class="bs-component">
 								<ul id="pagination" class="pagination">
-
 								</ul>
 							</div>
 						</div>
 					</div>
 				</div>
+				
+			</div>
 			</div>
 		</div>	
 	</div>	
